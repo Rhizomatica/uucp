@@ -1,4 +1,4 @@
-''' $Id: uustat.1,v 1.14 2002/03/05 22:15:10 ian Rel $
+.\" ''' $Id: uustat.1,v 1.14 2002/03/05 22:15:10 ian Rel $
 .TH uustat 1 "Taylor UUCP 1.07"
 .SH NAME
 uustat \- UUCP status inquiry and control
@@ -404,7 +404,7 @@ Print a help message and exit.
 .SH EXAMPLES
 .br
 .nf
-uustat --all
+uustat \-\-all
 .fi
 Display status of all jobs.  A sample output line is as follows:
 .br
@@ -441,7 +441,7 @@ options may be used to control which jobs are listed.
 
 .br
 .nf
-uustat --executions
+uustat \-\-executions
 .fi
 Display status of queued up execution requests.  A sample output line
 is as follows:
@@ -472,7 +472,7 @@ options may be used to control which requests are listed.
 
 .br
 .nf
-uustat --list
+uustat \-\-list
 .fi
 Display status for all systems with queued up commands.  A sample
 output line is as follows:
@@ -489,7 +489,7 @@ and the status of that conversation.
 
 .br
 .nf
-uustat --status
+uustat \-\-status
 .fi
 Display conversation status for all remote systems.  A sample output
 line is as follows:
@@ -509,7 +509,7 @@ also displays the time when the next call will be permitted.
 
 .br
 .nf
-uustat --ps
+uustat \-\-ps
 .fi
 Display the status of all processes holding UUCP locks.  The output
 format is system dependent, as
@@ -521,7 +521,7 @@ simply invokes
 .br
 .in +0.5i
 .nf
-uustat --command rmail --older-than 168 --kill-all --no-list --mail --notify --comment "Queued for over 1 week"
+uustat \-\-command rmail \-\-older\-than 168 \-\-kill\-all \-\-no\-list \-\-mail \-\-notify \-\-comment "Queued for over 1 week"
 .fi
 .in -0.5i
 This will kill all

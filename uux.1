@@ -1,4 +1,4 @@
-''' $Id: uux.1,v 1.15 2002/03/05 22:20:48 ian Rel $
+.\" ''' $Id: uux.1,v 1.15 2002/03/05 22:20:48 ian Rel $
 .TH uux 1 "Taylor UUCP 1.07"
 .SH NAME
 uux \- Remote command execution over UUCP
@@ -202,7 +202,7 @@ Print a help message and exit.
 .SH EXAMPLES
 .br
 .nf
-uux -z - sys1!rmail user1
+uux \-z \- sys1!rmail user1
 .fi
 Execute the command ``rmail user1'' on the system sys1, giving it as
 standard input whatever is given to
@@ -213,7 +213,7 @@ as standard input.  If a failure occurs, send a message using
 
 .br
 .nf
-uux 'diff -c sys1!~user1/file1 sys2!~user2/file2 >!file.diff'
+uux 'diff \-c sys1!~user1/file1 sys2!~user2/file2 >!file.diff'
 .fi
 Fetch the two named files from system sys1 and system sys2 and execute
 .I diff
