@@ -1756,7 +1756,7 @@ icutake (puuconf, argc, argv, pvar, pinfo)
     zfrom = zbufcpy (argv[1]);
   else
     {
-      zfrom = zsysdep_terminal_line ("Remote file to retreive: ");
+      zfrom = zsysdep_terminal_line ("Remote file to retrieve: ");
       if (zfrom == NULL)
 	ucuabort ();
       zfrom[strcspn (zfrom, " \t\n")] = '\0';
