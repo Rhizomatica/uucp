@@ -5,6 +5,8 @@
 @setchapternewpage odd
 @c %**end of header
 
+@dircategory Networking tools
+
 @iftex
 @finalout
 @end iftex

@@ -17,9 +17,9 @@ MAN=$(prefix)/man/man1
 newconfigdir = $(prefix)/conf/uucp
 
 # Flags to use when compiling uurate
-CC=gcc -O2
-CFLAGS=-I.. -Wall
-LDFLAGS=-s -lm
+CC=gcc
+CFLAGS+=-I..
+LDFLAGS=-lm
 
 SHELL=/bin/sh
 PROGS=uurate

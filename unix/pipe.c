@@ -199,6 +199,7 @@ fspipe_dial (qconn, puuconf, qsys, zphone, qdialer, ptdialer)
   struct ssysdep_conn *q;
   int aidescs[3];
   const char **pzprog;
+  char **p;
 
   q = (struct ssysdep_conn *) qconn->psysdep;
 
@@ -211,6 +212,11 @@ fspipe_dial (qconn, puuconf, qsys, zphone, qdialer, ptdialer)
       ulog (LOG_ERROR, "No command for pipe connection");
       return FALSE;
     }
+  
+  /* Look for a string \H and replaced it by the address given for this system */
+  for (p=pzprog; *p; p++)
+    if (!strcmp(*p, "\\H"))
+      *p = zphone;
 
   aidescs[0] = SPAWN_WRITE_PIPE;
   aidescs[1] = SPAWN_READ_PIPE;

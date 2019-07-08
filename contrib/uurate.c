@@ -216,7 +216,7 @@ struct Protocol_Summary
 struct Host_entry
     {
     struct Host_entry *next;
-    char Hostname[32];
+    char Hostname[MAXHOSTNAMELEN];
     struct Execution_Command *cmds;      /* Local Activities */
     struct Phone_Call call[2];            /* In & Out Activities */
     struct Protocol_Summary *proto;

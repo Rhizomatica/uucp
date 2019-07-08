@@ -606,12 +606,7 @@ fywait_for_packet (qdaemon, pfexit)
 #endif
 #endif
 
-#ifdef I386_ASM
-#define ROTATE(i) \
-	asm ("rolw $1,%0" : "=g" (i) : "g" (i))
-#else
 #define ROTATE(i) i += i + ((i & 0x8000) >> 15)
-#endif
 
 static unsigned short
 iychecksum (z, c)

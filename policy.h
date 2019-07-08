@@ -240,8 +240,7 @@
    the sendmail choice below.  Otherwise, select one of the other
    choices as appropriate.  */
 #if 1
-#define MAIL_PROGRAM "/usr/lib/sendmail -t"
-/* #define MAIL_PROGRAM "/usr/sbin/sendmail -t" */
+#define MAIL_PROGRAM "/usr/sbin/sendmail -oi -t"
 #define MAIL_PROGRAM_TO_BODY 1
 #define MAIL_PROGRAM_SUBJECT_BODY 1
 #endif
@@ -302,7 +301,7 @@
 /* #define LOCKDIR "/usr/spool/locks" */
 /* #define LOCKDIR "/usr/spool/uucp/LCK" */
 /* #define LOCKDIR "/var/spool/lock" */
-/* #define LOCKDIR "/var/lock" */
+#define LOCKDIR "/var/lock"
 
 /* You must also specify the format of the lock files by setting
    exactly one of the following macros to 1.  Check an existing lock
@@ -349,7 +348,7 @@
    The format for QNX lock files was made up just for Taylor UUCP.
    QNX doesn't come with a version of UUCP.  */
 #define HAVE_V2_LOCKFILES 0
-#define HAVE_HDB_LOCKFILES 0
+#define HAVE_HDB_LOCKFILES 1
 #define HAVE_SCO_LOCKFILES 0
 #define HAVE_SVR4_LOCKFILES 0
 #define HAVE_SEQUENT_LOCKFILES 0
@@ -466,8 +465,8 @@
    When looking something up (a system, a port, etc.) the new style
    configuration files will be read first, followed by the V2
    configuration files, followed by the HDB configuration files.  */
-#define HAVE_V2_CONFIG 0
-#define HAVE_HDB_CONFIG 0
+#define HAVE_V2_CONFIG 1
+#define HAVE_HDB_CONFIG 1
 
 /* Exactly one of the following macros must be set to 1.  The exact
    format of the spool directories is explained in unix/spool.c.
@@ -572,16 +571,16 @@
 /* The name of the default spool directory.  If HAVE_TAYLOR_CONFIG is
    set to 1, this may be overridden by the ``spool'' command in the
    configuration file.  */
-#define SPOOLDIR "/usr/spool/uucp"
-/* #define SPOOLDIR "/var/spool/uucp" */
+/* #define SPOOLDIR "/usr/spool/uucp" */
+#define SPOOLDIR "/var/spool/uucp"
 
 /* The name of the default public directory.  If HAVE_TAYLOR_CONFIG is
    set to 1, this may be overridden by the ``pubdir'' command in the
    configuration file.  Also, a particular system may be given a
    specific public directory by using the ``pubdir'' command in the
    system file.  */
-#define PUBDIR "/usr/spool/uucppublic"
-/* #define PUBDIR "/var/spool/uucppublic" */
+/* #define PUBDIR "/usr/spool/uucppublic" */
+#define PUBDIR "/var/spool/uucppublic"
 
 /* The default command path.  This is a space separated list of
    directories.  Remote command executions requested by uux are looked
@@ -589,7 +588,7 @@
    command path may be overridden for a particular system.  For most
    systems, you should just make sure that the programs rmail and
    rnews can be found using this path.  */
-#define CMDPATH "/bin /usr/bin /usr/local/bin"
+#define CMDPATH "/bin /usr/bin /usr/local/bin /usr/sbin"
 
 /* The default amount of free space to require for systems that do not
    specify an amount with the ``free-space'' command.  This is only
@@ -644,23 +643,23 @@
 /* The default log file when using HAVE_TAYLOR_LOGGING.  When using
    HAVE_TAYLOR_CONFIG, this may be overridden by the ``logfile''
    command in the configuration file.  */
-#define LOGFILE "/usr/spool/uucp/Log"
+/* #define LOGFILE "/usr/spool/uucp/Log" */
 /* #define LOGFILE "/var/spool/uucp/Log" */
-/* #define LOGFILE "/var/log/uucp/Log" */
+#define LOGFILE "/var/log/uucp/Log"
 
 /* The default statistics file when using HAVE_TAYLOR_LOGGING.  When
    using HAVE_TAYLOR_CONFIG, this may be overridden by the
    ``statfile'' command in the configuration file.  */
-#define STATFILE "/usr/spool/uucp/Stats"
+/* #define STATFILE "/usr/spool/uucp/Stats" */
 /* #define STATFILE "/var/spool/uucp/Stats" */
-/* #define STATFILE "/var/log/uucp/Stats" */
+#define STATFILE "/var/log/uucp/Stats"
 
 /* The default debugging file when using HAVE_TAYLOR_LOGGING.  When
    using HAVE_TAYLOR_CONFIG, this may be overridden by the
    ``debugfile'' command in the configuration file.  */
-#define DEBUGFILE "/usr/spool/uucp/Debug"
+/* #define DEBUGFILE "/usr/spool/uucp/Debug" */
 /* #define DEBUGFILE "/var/spool/uucp/Debug" */
-/* #define DEBUGFILE "/var/log/uucp/Debug" */
+#define DEBUGFILE "/var/log/uucp/Debug"
 
 #endif /* HAVE_TAYLOR_LOGGING */
 
