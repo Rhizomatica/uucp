@@ -1517,7 +1517,7 @@ uqdo_xqt_file (puuconf, zfile, zbase, qsys, zlocalname, zcmd, pfprocessed)
 	  az[i++] = zQcmd;
 	  az[i++] = "\n";
 
-	  (void) fsysdep_mail (zmail, "Execution succeded", i, az);
+	  (void) fsysdep_mail (zmail, "Execution succeeded", i, az);
 	}
 
       /* Now we may have to uucp the output to some other machine.  */
