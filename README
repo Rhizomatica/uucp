@@ -1,6 +1,6 @@
 This is the README file for version 1.07 of the Taylor UUCP package.
 
-ps: Debian patches are committed to the sources in this git repository.
+ps: Patches are committed to the sources in this git repository.
 
 It was written by Ian Lance Taylor.  I can be reached at ian@airs.com.
 
