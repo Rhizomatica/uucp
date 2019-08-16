@@ -191,8 +191,8 @@ static boolean
 fspipe_dial (qconn, puuconf, qsys, zphone, qdialer, ptdialer)
      struct sconnection *qconn;
      pointer puuconf;
-     const struct uuconf_system *qsys ATTRIBUTE_UNUSED;
-     const char *zphone ATTRIBUTE_UNUSED;
+     const struct uuconf_system *qsys;
+     const char *zphone;
      struct uuconf_dialer *qdialer;
      enum tdialerfound *ptdialer;
 {
@@ -212,11 +212,16 @@ fspipe_dial (qconn, puuconf, qsys, zphone, qdialer, ptdialer)
       ulog (LOG_ERROR, "No command for pipe connection");
       return FALSE;
     }
-  
-  /* Look for a string \H and replaced it by the address given for this system */
+
+  /* Look for a string \H and replace it by the address given for this system */
   for (p=pzprog; *p; p++)
     if (!strcmp(*p, "\\H"))
       *p = zphone;
+
+  /* Look for a string \Z and replace by the system name to be called */
+  for (p=pzprog; *p; p++)
+    if (!strcmp(*p, "\\Z"))
+      *p = qsys->uuconf_zname;
 
   aidescs[0] = SPAWN_WRITE_PIPE;
   aidescs[1] = SPAWN_READ_PIPE;
