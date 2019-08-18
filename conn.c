@@ -114,12 +114,13 @@ fconn_unlock (qconn)
 /* Open a connection.  */
 
 boolean
-fconn_open (qconn, ibaud, ihighbaud, fwait, fuser)
+fconn_open (qconn, ibaud, ihighbaud, fwait, fuser, nortscts)
      struct sconnection *qconn;
      long ibaud;
      long ihighbaud;
      boolean fwait;
      boolean fuser;
+     boolean nortscts;
 {
   boolean fret;
 
@@ -177,7 +178,7 @@ fconn_open (qconn, ibaud, ihighbaud, fwait, fuser)
   else
     ulog_device (qconn->qport->uuconf_zname);
 
-  fret = (*qconn->qcmds->pfopen) (qconn, ibaud, fwait, fuser);
+  fret = (*qconn->qcmds->pfopen) (qconn, ibaud, fwait, fuser, nortscts);
 
   if (! fret)
     ulog_device ((const char *) NULL);

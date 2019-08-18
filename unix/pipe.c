@@ -49,7 +49,7 @@ const char pipe_rcsid[] = "$Id: pipe.c,v 1.10 2002/03/05 19:10:42 ian Rel $";
 
 static void uspipe_free P((struct sconnection *qconn));
 static boolean fspipe_open P((struct sconnection *qconn, long ibaud,
-			      boolean fwait, boolean fuser));
+			      boolean fwait, boolean fuser, boolean nortscts));
 static boolean fspipe_close P((struct sconnection *qconn,
 			       pointer puuconf,
 			       struct uuconf_dialer *qdialer,
@@ -115,11 +115,12 @@ uspipe_free (qconn)
 
 /*ARGSUSED*/
 static boolean
-fspipe_open (qconn, ibaud, fwait, fuser)
+fspipe_open (qconn, ibaud, fwait, fuser, nortscts)
      struct sconnection *qconn ATTRIBUTE_UNUSED;
      long ibaud ATTRIBUTE_UNUSED;
      boolean fwait;
      boolean fuser ATTRIBUTE_UNUSED;
+     boolean nortscts ATTRIBUTE_UNUSED;
 {
   /* We don't do incoming waits on pipes.  */
   if (fwait)
@@ -164,10 +165,43 @@ fspipe_close (qconn, puuconf, qdialer, fsuccess)
   if (qsysdep->ipid >= 0)
     {
       if (kill (qsysdep->ipid, SIGHUP) == 0)
-        usysdep_sleep (2);
+        {
+          #if defined (HAVE_USLEEP) && defined (HAVE_WAITPID)
+          /* Avoid wasting 4 seconds (including the SIGPIPE case below).
+             Quick and dirty work-around to avoid depending on SIGCHLD:
+             Just sleep up to 20 times 0.1s as long as the child exists. */
+          int i, status;
+          for (i = 20; i > 0; i--)
+            {
+              if (waitpid (qsysdep->ipid, &status, WNOHANG) == qsysdep->ipid)
+                {
+                  qsysdep->ipid = -1;
+                  return fret;
+                }
+              usleep (100000);
+            }
+          #else
+          usysdep_sleep (2);
+          #endif
+        }
 #ifdef SIGPIPE
       if (kill (qsysdep->ipid, SIGPIPE) == 0)
-        usysdep_sleep (2);
+        {
+          #if HAVE_USLEEP
+          int i, status;
+          for (i = 20; i > 0; i--)
+            {
+              if (waitpid (qsysdep->ipid, &status, WNOHANG) == qsysdep->ipid)
+                {
+                  qsysdep->ipid = -1;
+                  return fret;
+                }
+              usleep (100000);
+            }
+          #else
+          usysdep_sleep (2);
+          #endif
+        }
 #endif
       if (kill (qsysdep->ipid, SIGKILL) < 0 && errno == EPERM)
 	{

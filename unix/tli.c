@@ -106,7 +106,7 @@ static const char *ztlierror P((void));
 static void utli_free P((struct sconnection *qconn));
 static boolean ftli_push P((struct sconnection *qconn));
 static boolean ftli_open P((struct sconnection *qconn, long ibaud,
-			    boolean fwait, boolean fuser));
+			    boolean fwait, boolean fuser, boolean nortscts));
 static boolean ftli_close P((struct sconnection *qconn,
 			     pointer puuconf,
 			     struct uuconf_dialer *qdialer,
@@ -238,11 +238,12 @@ ftli_push (qconn)
    system.  */
 
 static boolean
-ftli_open (qconn, ibaud, fwait, fuser)
+ftli_open (qconn, ibaud, fwait, fuser, nortscts)
      struct sconnection *qconn;
      long ibaud;
      boolean fwait;
      boolean fuser ATTRIBUTE_UNUSED;
+     boolean nortscts ATTRIBUTE_UNUSED;
 {
   struct ssysdep_conn *qsysdep;
   const char *zdevice;

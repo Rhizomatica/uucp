@@ -88,7 +88,7 @@ ftstart (qdaemon, pzlog)
   zTbuf[0] = 0;
   zTbuf[1] = 0;
   fTfile = FALSE;
-  usysdep_sleep (2);
+  // usysdep_sleep (2);  -- why? protocol t is meant to be used over an error-free connection
   return TRUE;
 }
 

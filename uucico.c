@@ -695,7 +695,7 @@ main (argc, argv)
 
       if (fret)
 	{
-	  if (! fconn_open (&sconn, (long) 0, (long) 0, TRUE, FALSE))
+	  if (! fconn_open (&sconn, (long) 0, (long) 0, TRUE, FALSE, FALSE))
 	    fret = FALSE;
 	  qConn = &sconn;
 	}
@@ -714,7 +714,7 @@ main (argc, argv)
 				     (struct uuconf_dialer *) NULL,
 				     TRUE)
 		      || ! fconn_open (&sconn, (long) 0, (long) 0, TRUE,
-				       FALSE))
+				       FALSE, FALSE))
 		    break;
 		}
 	      fret = FALSE;
@@ -1176,7 +1176,7 @@ fconn_call (qdaemon, qport, qstat, cretry, pfcalled)
     }
 
   if (! fconn_open (&sconn, qsys->uuconf_ibaud, qsys->uuconf_ihighbaud,
-		    FALSE, FALSE))
+		    FALSE, FALSE, FALSE))
     {
       terr = STATUS_PORT_FAILED;
       fret = FALSE;

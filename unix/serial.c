@@ -246,11 +246,11 @@ static boolean fsserial_open P((struct sconnection *qconn, long ibaud,
 				boolean fwait, boolean fuser,
 				enum tclocal_setting tlocal));
 static boolean fsstdin_open P((struct sconnection *qconn, long ibaud,
-			       boolean fwait, boolean fuser));
+			       boolean fwait, boolean fuser, boolean nortscts));
 static boolean fsmodem_open P((struct sconnection *qconn, long ibaud,
-			       boolean fwait, boolean fuser));
+			       boolean fwait, boolean fuser, boolean nortscts));
 static boolean fsdirect_open P((struct sconnection *qconn, long ibaud,
-				boolean fwait, boolean fuser));
+				boolean fwait, boolean fuser, boolean nortscts));
 static boolean fsblock P((struct ssysdep_conn *q, boolean fblock));
 static boolean fsserial_close P((struct ssysdep_conn *q));
 static boolean fsstdin_close P((struct sconnection *qconn,
@@ -1308,11 +1308,12 @@ fsserial_open (qconn, ibaud, fwait, fuser, tlocal)
    call to fsblock.  */
 
 static boolean
-fsstdin_open (qconn, ibaud, fwait, fuser)
+fsstdin_open (qconn, ibaud, fwait, fuser, nortscts)
      struct sconnection *qconn;
      long ibaud;
      boolean fwait;
      boolean fuser;
+     boolean nortscts;
 {
   struct ssysdep_conn *q;
 
@@ -1322,6 +1323,9 @@ fsstdin_open (qconn, ibaud, fwait, fuser)
 
   q->o = q->ord;
   if (! fsserial_open (qconn, ibaud, fwait, fuser, IGNORE_CLOCAL))
+    return FALSE;
+  if (nortscts
+      && ! fsserial_hardflow (qconn, FALSE))
     return FALSE;
   q->iwr_flags = fcntl (q->owr, F_GETFL, 0);
   if (q->iwr_flags < 0)
@@ -1335,11 +1339,12 @@ fsstdin_open (qconn, ibaud, fwait, fuser)
 /* Open a modem port.  */
 
 static boolean
-fsmodem_open (qconn, ibaud, fwait, fuser)
+fsmodem_open (qconn, ibaud, fwait, fuser, nortscts)
      struct sconnection *qconn;
      long ibaud;
      boolean fwait;
      boolean fuser;
+     boolean nortscts;
 {
   struct uuconf_modem_port *qm;
 
@@ -1356,7 +1361,10 @@ fsmodem_open (qconn, ibaud, fwait, fuser)
      out, because some modems don't assert the necessary signals until
      they see carrier.  Instead, we turn on hardware flow control in
      fsmodem_carrier.  */
-  if (fwait
+  if (nortscts
+      && ! fsserial_hardflow (qconn, FALSE))
+    return FALSE;
+  else if (fwait
       && ! fsserial_hardflow (qconn, qm->uuconf_fhardflow))
     return FALSE;
 
@@ -1366,11 +1374,12 @@ fsmodem_open (qconn, ibaud, fwait, fuser)
 /* Open a direct port.  */
 
 static boolean
-fsdirect_open (qconn, ibaud, fwait, fuser)
+fsdirect_open (qconn, ibaud, fwait, fuser, nortscts)
      struct sconnection *qconn;
      long ibaud;
      boolean fwait;
      boolean fuser;
+     boolean nortscts;
 {
   struct uuconf_direct_port *qd;
 
@@ -1383,7 +1392,7 @@ fsdirect_open (qconn, ibaud, fwait, fuser)
 
   /* Always turn on hardware flow control for a direct port when it is
      opened.  There is no other sensible time to turn it on.  */
-  return fsserial_hardflow (qconn, qd->uuconf_fhardflow);
+  return fsserial_hardflow (qconn, qd->uuconf_fhardflow && ! nortscts);
 }
 
 /* Change the blocking status of the port.  We keep track of the

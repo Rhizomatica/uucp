@@ -223,6 +223,7 @@ static const struct option asCulongopts[] =
   { "baud", required_argument, NULL, 's' },
   { "mapcr", no_argument, NULL, 't' },
   { "nostop", no_argument, NULL, 3 },
+  { "nortscts", no_argument, NULL, 'f' },
   { "system", required_argument, NULL, 'z' },
   { "config", required_argument, NULL, 'I' },
   { "debug", required_argument, NULL, 'x' },
@@ -258,6 +259,8 @@ main (argc, argv)
   enum txonxoffsetting txonxoff = XONXOFF_ON;
   /* -I: configuration file name.  */
   const char *zconfig = NULL;
+  /* -f: no hardware flow control */
+  boolean nortscts = FALSE;
   int iopt;
   pointer puuconf;
   int iuuconf;
@@ -295,7 +298,7 @@ main (argc, argv)
 	}
     }
 
-  while ((iopt = getopt_long (argc, argv, "a:c:deE:hnI:l:op:s:tvx:z:",
+  while ((iopt = getopt_long (argc, argv, "a:c:deE:fhnI:l:op:s:tvx:z:",
 			      asCulongopts, (int *) NULL)) != EOF)
     {
       switch (iopt)
@@ -320,6 +323,11 @@ main (argc, argv)
 	case 'E':
 	  /* Escape character.  */
 	  zCuvar_escape = optarg;
+	  break;
+
+	case 'f':
+	  /* No hardware flow control.  */
+	  nortscts = TRUE;
 	  break;
 
 	case 'h':
@@ -682,7 +690,7 @@ main (argc, argv)
 	}
 
       /* Here we have locked a connection to use.  */
-      if (! fconn_open (&sconn, iusebaud, ihighbaud, FALSE, sinfo.fdirect))
+      if (! fconn_open (&sconn, iusebaud, ihighbaud, FALSE, sinfo.fdirect, nortscts))
 	ucuabort ();
 
       fCuclose_conn = TRUE;

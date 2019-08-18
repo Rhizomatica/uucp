@@ -117,7 +117,7 @@ struct sconncmds
   boolean (*pfunlock) P((struct sconnection *qconn));
   /* Open the connection.  */
   boolean (*pfopen) P((struct sconnection *qconn, long ibaud,
-		       boolean fwait, boolean fuser));
+		       boolean fwait, boolean fuser, boolean nortscts));
   /* Close the connection.  */
   boolean (*pfclose) P((struct sconnection *qconn,
 			pointer puuconf,
@@ -198,7 +198,7 @@ extern boolean fconn_unlock P((struct sconnection *qconn));
    than the effective permissions.  */
 extern boolean fconn_open P((struct sconnection *qconn, long ibaud,
 			     long ihighbaud, boolean fwait,
-			     boolean fuser));
+			     boolean fuser, boolean nortscts));
 
 /* Close a connection.  The fsuccess argument is TRUE if the
    conversation completed normally, FALSE if it is being aborted.  */
