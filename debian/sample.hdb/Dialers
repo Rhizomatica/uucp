@@ -1,0 +1,26 @@
+#
+#	This is an off-the-cuff Dialers file example, mostly swiped from
+#   my own system.  -- dhs@firefly.com
+#
+
+#  Noisy dialing for a Hayes modem:
+# hayes	=,-,	"" \dATE1\r\c OK\r-ATE1\r\c-OK\r ATM1\r\c OK \EATDT\T\r\c CONNECT
+
+#  Quiet dialing for a Hayes modem:
+hayes	=,-,	"" \dATE1\r\c OK\r-ATE1\r\c-OK\r ATM0\r\c OK \EATDT\T\r\c CONNECT
+
+#  Setup for a direct connection.
+direct
+
+#  Hayes Modem Commands Used in These Examples:
+#  ATE1 -- Forces command echo to ON.  (I share my modem with a Mac, which
+#	insists on turning off the command echo on the modem, which confuses
+#	uucp.)
+#  ATM0 -- Turns off the modem speaker.
+#  ATDT -- Dial using tone.
+
+#  Note that there are two versions of the initialization for a hayes modem.
+#  The one in which the speaker is enabled is commented out.  You may find
+#    it helpful to comment out the silent version instead while you debug
+#    connection problems.
+

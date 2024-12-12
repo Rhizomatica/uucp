@@ -1,0 +1,10 @@
+uucp: non-standard-file-perm 0640 != 0644 [etc/uucp/call]
+uucp: non-standard-file-perm 0640 != 0644 [etc/uucp/passwd]
+uucp: non-standard-dir-perm  0750 != 0755 [usr/lib/uucp/]
+uucp: non-standard-dir-perm  1777 != 0755 [var/spool/uucppublic/]
+uucp: elevated-privileges 6755 uucp/dialout [usr/lib/uucp/uucico]
+uucp: elevated-privileges 6755 uucp/uucp [usr/sbin/uuxqt]
+uucp: elevated-privileges 4755 uucp/root [usr/bin/uucp]
+uucp: elevated-privileges 4755 uucp/root [usr/bin/uustat]
+uucp: elevated-privileges 4755 uucp/root [usr/bin/uux]
+

@@ -1,0 +1,90 @@
+
+			UUCP Documentation
+
+0. INTRO
+
+UUCP is nothing more then a file transfer protocol. Nowadays it's
+mostly used to transfer offline mail and news. Most documentation
+for it is in the manual pages and in the info files installed in
+/usr/share/info/uucp*.
+
+The Debian UUCP package is configured to use the taylor UUCP style
+configuration files. While these files are more readable then the
+"standard" HDB (Honey-Danber) configuration files there's less
+documentation on it. However the config files supplied in /etc/uucp
+are easy to setup. More elaborate exampes can be found in
+/usr/share/doc/uucp/examples/taylor.
+
+This package can also use the HDB configuration files instead of
+taylor if you really want that. Examples for that can be found
+in /usr/share/doc/uucp/examples/hdb.
+
+1. FILE AND DIRECTORY LOCATIONS.
+
+These might be a bit different then you're used to, so here's an overview:
+
+/etc/uucp		Configuration files
+/usr/bin		Programs to be executed by users
+/usr/sbin		Programs to be executed by root or uucp
+/usr/lib/uucp		Internal programs for the UUCP system, generally
+			not to be executed directly
+/var/spool/uucp		UUCP spool directory
+/var/spool/uucppublic	Public UUCP directory
+/var/log/uucp		Logfile directory
+
+The most outstanding differences with "traditional" systems are that the
+logfiles are not in /var/spool/uucp, uucico is in /usr/sbin instead of
+/usr/lib/uucp and the configuration files are in /etc/uucp instead of
+also in /usr/lib/uucp.
+
+2. SETTING UP A SIMPLE LEAF SITE.
+
+a. Get a UUCP name from your provider, and a loginname and a password.
+   Also ask for the provider's UUCP name and the telephone number.
+b. Enter your providers UUCP name, loginname and password into /etc/uucp/call
+c. If the UUCP name you got is not the same as your systems hostname,
+   edit /etc/uucp/config and set the nodename to your systems UUCP name.
+d. Enter the device your modem is connected to in /etc/uucp/port
+e. Make an entry with the UUCP name of your provider in /etc/uucp/sys
+
+If you are using a /dev/ttyS device (for example, /dev/ttyS1) to dialout
+on, set the modes on /dev/ttyS1 to 660 and chgrp it to the "dialout" group.
+That way, uucico (the file transfer engine) can access that port.
+
+The same is true if you use a /dev/cua device but the permissions should
+already be OK. (Use of the cua* ports is deprecated however).
+
+Now you should be able to place a call to your provider and login
+successfully with the command "uupoll <provider_uucp_name>". Beware
+that if there are any mail messages for you and you have not setup
+your mail system correctly that you might lose those messages.
+
+
+
+3. MAINTENANCE AND POLLING THE OTHER SYSTEM AUTOMATICALLY.
+
+You can add the uucp name, and a list of hours when you want your system
+to call the providers UUCP system to the file /etc/uucp/Poll. This file
+is examined hourly by the /usr/lib/uucp/uudemon.hr script to see if
+the remote system(s) should be polled.
+
+uudemon.hr is called from uucp's crontab in /etc/cron.d.  Job expiry is
+started from the /etc/cron.daily/uucp script. See /etc/uucp/expire. Logs
+are rotated with logrotate.
+
+
+
+4. DEBIAN SPECIFIC PATCHES/BEHAVIOUR
+
+* In port commands \H is substituted with the address assoziated with the
+  system.  That allows you to use the same port (for instance an ssh port) for
+  several systems.
+
+* uucico supports a --grade option that limits outgoing call to a given grade.
+
+* In order to have /etc/uucp root.uucp, i.e. not writeable by the uucp
+  processes, it may be necessary that you start uucp related programs like
+  uucico as user uucp.  For instance sudo -u uucp uucico... .
+
+    /usr/share/doc/uucp/README          1.02  22-Feb-1998  miquels@cistron.nl
+    /usr/share/doc/uucp/README.Debian         39-Jul-2002  weasel@debian.org

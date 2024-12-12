@@ -1,0 +1,9 @@
+./contrib/uurate.man
+./debian/contrib/uucpd.8
+./debian/contrib/in.uucpd.8
+./debian/manpages/uulog.1
+./debian/manpages/uuname.1
+./debian/manpages/uupick.1
+./debian/manpages/uusched.8
+./debian/manpages/uuto.1
+./debian/manpages/uupoll.1

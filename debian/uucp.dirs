@@ -1,0 +1,9 @@
+etc/uucp
+usr/lib/uucp
+usr/share/doc/uucp/examples/hdb
+usr/share/doc/uucp/examples/taylor
+usr/share/lintian/overrides
+var/log/uucp
+var/spool/uucp
+var/spool/uucppublic
+var/spool/uucppublic

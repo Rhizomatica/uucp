@@ -1,0 +1,96 @@
+#! /bin/sh
+#
+# uupoll	Poll a system manually like uudemon.hr would
+#		do when the system is scheduled. This script
+#		assumes Taylor UUCP and Taylor style Log files.
+#
+# Version:	@(#)uupoll	2.30	05-May-1997
+#
+
+# Debug level for uucico
+DEBUG=
+
+# Direct uuxqt and the like?
+NOUUXQT=0
+
+# Constants.
+UUCP="/usr/lib/uucp"			# name of the UUCP bin directory
+CONF="/etc/uucp"			# name of the UUCP conf directory
+NEWS="/usr/lib/news"			# name of the news bin directory
+LOGDIR="/var/log/uucp"			# name of the UUCP spool directory
+BATCH1="$NEWS/bin/send-uucp.pl"		# path to the news batcher (INN + Perl)
+BATCH2="$NEWS/bin/send-uucp"		# path to the news batcher (INN)
+BATCH3="$NEWS/sendbatch"		# path to the news batcher (Wnews/Bnews)
+
+# Check arguments.
+while [ "$STOP" != 1 ]
+do
+    case "$1" in
+	-x*)
+		DEBUG=$1
+		shift
+		;;
+	-n)
+		NOUUXQT=1
+		shift
+		;;
+	-*)
+		echo "Usage: uupoll [-n] [-xNUM] <system>"
+		exit 1
+		;;
+	*)
+		if [ $# != 1 ]
+		then
+			echo "Usage: uupoll [-n] [-xNUM] <system>"
+			exit 1
+		fi
+		STOP=1
+		;;
+    esac
+done
+
+# Do we know this system?
+uuname -a | grep "$1" > /dev/null
+if [ $? != 0 ]
+then
+	echo "uupoll: system <$1> unknown."
+	exit 1
+fi
+
+PATH="/bin:/sbin:/usr/bin:/usr/sbin:$UUCP"
+
+# Batch news for this system
+ME=`whoami`
+if [ $NOUUXQT = 0 ] && ([ $ME = news ] || [ $ME = root ])
+then
+  for i in $BATCH1 $BATCH2 $BATCH3
+  do
+	if [ -f $i ]
+	then
+		echo "Batching news, please wait..."
+		$i $1
+		break
+	fi
+  done
+fi
+
+# Fire up uucico, but first show the log output.
+tail -n 0 -f $LOGDIR/Log &
+uucico $DEBUG -q -D -S$1
+
+# Do we want to run uuxqt and news unbatching etc?
+if [ $NOUUXQT = 1 ]
+then
+	# Kill log watch process and exit.
+	kill -9 $!
+	exit 0
+fi
+
+# Run uuxqt, which may not have been run by uucico.
+uuxqt $DEBUG
+
+# Kill the log watch process.
+kill -9 $!
+
+exit 0
+# End of uupoll.

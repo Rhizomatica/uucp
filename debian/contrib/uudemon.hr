@@ -1,0 +1,100 @@
+#! /bin/sh
+#
+# uudemon.hr	Check the Poll file and poll any systems requiring polling
+#		during this hour then poll any system with outstanding jobs.
+#		Normally called each hour by cron, eg:
+#
+#			40 * * * * /usr/lib/uucp/uudemon.hr
+#
+# Version:	@(#)uudemon.hr  2.21  21-Apr-1999  MvS
+#
+
+# Debug level for uucico
+DEBUG=-x4
+
+# Constants.
+UUCP="/usr/lib/uucp"			# name of the UUCP bin directory
+CONF="/etc/uucp"			# name of the UUCP conf directory
+SPOOL="/var/spool/uucp"			# name of the UUCP spool directory
+POLL="${CONF}/Poll"			# path to the poll file
+
+# Variables.
+SYSTEM=""				#  system name to be polled
+CURRHOUR=""				#  current hour, derived from date
+HOURLIST=""				#  list of hours system is to be polled
+HOUR=""					#  one of the hours in HOURLIST
+
+# Setup the PATH.
+PATH="/bin:/sbin:/usr/bin:/usr/sbin:$UUCP"
+umask 022
+
+# Find out the current hour.
+CURRHOUR=`date +%H`
+
+# See for which systems we have to force an uucp request.
+if [ -r "$POLL" ]
+then
+	cat $POLL | while read ACTION SYSTEM HOURLIST
+	do
+		case "$ACTION" in
+			schedule)
+				# Create an empty Command file.
+				for HOUR in ${HOURLIST}
+				do
+				  if [ "$HOUR" = "$CURRHOUR" ]
+				  then
+					# Schedule empty event.
+					# Taylor style spool directories!
+					if [ ! -d $SPOOL/$SYSTEM/C. ]
+					then
+						mkdir -p $SPOOL/$SYSTEM/C.
+					fi
+					touch $SPOOL/$SYSTEM/C./C.Nxxxx
+				  fi
+				done
+				;;
+			*)
+				# The rest is ignored. Could be comment
+				# or something.
+				;;
+		esac
+	done
+fi
+
+#
+# We have to read the Poll file again to see for which systems
+# an UUCP event has been scheduled.
+#
+if [ -r "$POLL" ]
+then
+	cat "$POLL" | while read ACTION SYSTEM HOURLIST
+	do
+		case "$ACTION" in
+			poll)
+				# See if we have to call this system
+				for HOUR in ${HOURLIST}
+				do
+				  if [ "$HOUR" -eq "$CURRHOUR" ]
+				  then
+				    # Only if there is work.
+				    if [ "`ls -1A $SPOOL/$SYSTEM/C. 2>/dev/null`" ]
+				    then
+					# Flags: -D(don't go in the background)
+					#        -q(don't run uuxqt)
+					uucico $DEBUG -q -D -S$SYSTEM
+				    fi
+				  fi
+				done
+				;;
+			*)
+				# Ignore everything else
+				;;
+			esac
+	done
+fi
+
+# Run uuxqt, which may not have been run by uucico.
+uuxqt
+
+exit 0
+# End of uudemon.hr.

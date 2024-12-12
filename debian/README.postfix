@@ -1,0 +1,46 @@
+Postfix and sending mail via UUCP
+---------------------------------
+
+Traditionally there are no Clients and Servers in UUCP.  We will use
+the term Client to refer to a leaf site, that gets and sends it mail via
+uucp, while the Server is the one that accepts mail on behalf of one of
+more uucp leaf site.
+
+
+Client side
+-----------
+
+If you want to send all your outgoing mail via uucp, just add this to
+your main.cf:
+
+	default_transport = uucp
+	relayhost = uucpnodenameofserver
+
+Of course your postfix should know that it handles mail for your
+domain (uucpsite.example.com), so you need to add it to your
+mydestination or handle it via virtual or similar.
+
+
+Server side
+-----------
+
+If you want to handle mail for uucpsite.example.com simply add
+uucpsite.example.com to your relay_domains setting in main.cf:
+
+	relay_domains = ....., uucpsite.example.com
+
+Next you need to tell postfix how to route mail for that domain.
+Add the following line to main.cf:
+
+	transport_maps = hash:/etc/postfix/transport
+
+and write a /etc/postfix/transport file with the following:
+
+	uucpsite.example.com   uucp:uucpnodenameofclient
+
+Then postmap the file using "postmap /etc/postfix/transport".
+
+
+-- 
+Peter Palfrader <weasel@debian.org>
+Sun, 25 Apr 2004 20:24:39 +0200

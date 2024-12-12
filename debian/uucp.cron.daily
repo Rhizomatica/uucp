@@ -1,0 +1,10 @@
+#!/bin/sh
+
+#
+# Every day generate reports and expire old jobs.
+# see /etc/uucp/expire for configuration of job expiry.
+#
+
+if [ -x /usr/lib/uucp/uudemon.day ]; then
+	su uucp -s /bin/sh -c "/usr/lib/uucp/uudemon.day root"
+fi

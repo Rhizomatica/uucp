@@ -1,0 +1,23 @@
+#! /bin/sh
+
+set -e
+
+case "$1" in
+	remove|upgrade|remove-in-favour|deconfigure-in-favour)
+		;;
+	failed-upgrade)
+        	echo "Upgrade failed!"
+        	exit 0
+		;;
+	*)
+		echo "$0: unknown action \"$1\""
+		exit 0
+		;;
+esac
+
+# Kill all running UUCP sessions.
+start-stop-daemon --stop --quiet --oknodo --retry TERM/5/KILL/2 --exec /usr/lib/uucp/uucico
+
+#DEBHELPER#
+
+exit 0

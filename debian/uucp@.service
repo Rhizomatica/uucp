@@ -1,0 +1,9 @@
+[Unit]
+Description=UUCP server
+Wants=network.target
+Documentation=http://airs.com/ian/uucp.html
+
+[Service]
+User=uucp
+ExecStart=-/usr/sbin/uucico -l
+StandardInput=socket

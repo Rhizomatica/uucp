@@ -1,0 +1,199 @@
+#! /bin/sh
+#
+# uudemon.day	Clean up the uucp spool directory.
+#		Normally called each day by cron, eg:
+#
+#			00 4 * * * /usr/lib/uucp/uudemon.day root
+#
+#		to perform an UUCP cleanup and send the results to
+#		user "root".  The single argument is the address to
+#		which the daily report is to be sent. If omitted, the
+#		report is not created
+#
+# Usage:	uudemon.day [<email address>]
+#
+# Version:	@(#)uudemon.day	2.20  22-Feb-1998  MvS
+#
+
+# Constants.
+HOME=/usr/lib/uucp
+SPOOL=/var/spool/uucp
+UUPUB=/var/spool/uucppublic
+MAIL=/usr/sbin/sendmail
+NODENAME=`/usr/bin/uuname -l`
+
+TEMPDIR=$SPOOL/.Temp
+[ ! -d $TEMPDIR ] && mkdir $TEMPDIR
+
+TMP1=$TEMPDIR/uudemon.day.1.$$
+TMP2=$TEMPDIR/uudemon.day.2.$$
+TMP3=$TEMPDIR/uudemon.day.3.$$
+TMP4=$TEMPDIR/uudemon.day.4.$$
+TMP5=$TEMPDIR/uudemon.day.5.$$
+
+PATH=$HOME:/bin:/usr/bin:/sbin:/usr/sbin
+
+# See if uutraf is available.
+if [ -x /usr/bin/perl -a -x $HOME/uutraf.pl ]
+then
+  UURATE=$HOME/uutraf.pl
+else
+  UURATE=uurate
+fi
+
+# Remove temp files.
+rm -f $TMP1 $TMP2 $TMP3 $TMP4 $TMP5
+
+# List and remove files in /var/spool/uucppublic older than two weeks.
+if [ -d $UUPUB ]
+then
+	EXPIRE=`perl -e 'do "/etc/uucp/expire" || die("Cannot do /etc/uucp/expire: $!\n");
+			die("Unknown expireversion: $expireversion\n") unless ($expireversion==1);
+			$expire = defined($expire_uucppublic) ?
+				$expire_uucppublic :
+				14;
+			print $expire;'`;
+		
+	if [ -n "$EXPIRE" -a "$EXPIRE" -gt 0 ]; then
+		EXPIRE=`expr $EXPIRE - 1`
+		find $UUPUB -type f -mtime +$EXPIRE -print 2> /dev/null | tee $TMP1 | xargs rm -f
+	fi
+fi
+
+# Remove old rnews batches from our system.
+for system in `uustat -c rnews | awk '{print $2}' | sort -u`; do
+	EXPIRE=`perl -e 'do "/etc/uucp/expire" || die("Cannot do /etc/uucp/expire: $!\n");
+			die("Unknown expireversion: $expireversion\n") unless ($expireversion==1);
+			$system = $ARGV[0];
+			$expire = defined ($news{$system}) ?
+				$news{$system} :
+				defined($news) ?
+					$news :
+					672;
+			print $expire;' $system`;
+
+	if [ -n "$EXPIRE" -a $EXPIRE -gt 0 ] ; then
+		uustat -s $system -c rnews -o $EXPIRE -K >> $TMP2 2>&1
+	fi
+done
+
+# Return mail messages older than the expire time set in /etc/uucp/expire to sender.
+for system in `uustat -c rmail | awk '{print $2}' | sort -u`; do
+	EXPIRE=`perl -e 'do "/etc/uucp/expire" || die("Cannot do /etc/uucp/expire: $!\n");
+			die("Unknown expireversion: $expireversion\n") unless ($expireversion==1);
+			$system = $ARGV[0];
+			$expire = defined ($mail{$system}) ?
+				$mail{$system} :
+				defined($mail) ?
+					$mail :
+					672;
+			print $expire;' $system`;
+
+	if [ -n "$EXPIRE" -a $EXPIRE -gt 0 ] ; then
+		uustat -s $system -o $EXPIRE -c rmail -B 150 -K -N -W"======
+Reason: Your mail message has been expired after $EXPIRE hours.
+====" >> $TMP4 2>&1
+	fi
+done
+
+# List uucp jobs older than a certain time.
+for system in `uustat -a | awk '{print $2}' | sort -u`; do
+	EXPIRE=`perl -e 'do "/etc/uucp/expire" || die("Cannot do /etc/uucp/expire: $!\n");
+			die("Unknown expireversion: $expireversion\n") unless ($expireversion==1);
+			$system = $ARGV[0];
+			$expire = defined ($list{$system}) ?
+				$list{$system} :
+				defined($list) ?
+					$list :
+					168;
+			print $expire;' $system`;
+
+	if [ -n "$EXPIRE" -a $EXPIRE -gt 0 ] ; then
+		uustat -s $system -o $EXPIRE >> $TMP3 2>&1
+	fi
+done
+
+REPORT_INTERESTING=0
+
+# Create the daily report and mail it.
+if [ "$1" != "" ]
+then
+	(
+	  # Generate mail headers for sendmail
+	  cat <<EOF
+Subject: daily UUCP report ($NODENAME)
+Precedence: junk
+
+EOF
+
+	  # Generate traffic statistics.
+	  echo "Traffic statistics of `date`:"
+	  # log files have been processed by logrotate already
+	  if [ -e /var/log/uucp/Log.1 -a -e /var/log/uucp/Stats.1 ]; then
+	  	$UURATE -I /etc/uucp/config /var/log/uucp/Log.1 /var/log/uucp/Stats.1
+	  	echo
+	  fi
+
+	  # List old uucp jobs.
+	  if [ -s $TMP3 ]
+	  then
+		REPORT_INTERESTING=1
+		echo "UUCP jobs OLDER than one week: "
+		echo "(rnews requests expire in two weeks, rmail requests in 4 weeks)"
+		echo "(these values are the defaults. Whatever you sepecified in /etc/uucp/expire is what counts.)"
+		cat $TMP3
+	  	echo "--"; echo
+	  fi
+
+	  # List the files that were removed from /var/spool/uucppublic.
+	  if [ -s $TMP1 ]
+	  then
+		REPORT_INTERESTING=1
+		echo "Files removed from $UUPUB:"
+		cat $TMP1
+		echo "--"; echo
+	  fi
+
+	  # List the rnews jobs we killed.
+	  if [ -s $TMP2 ]
+	  then
+		REPORT_INTERESTING=1
+		echo "Expired and removed rnews batches:"
+		cat $TMP2
+		echo "--"; echo
+	  fi
+
+	  if [ -s $TMP4 ]
+	  then
+		REPORT_INTERESTING=1
+		echo "Expired and removed rmail requests (mailed back to originator):"
+		cat $TMP4
+		echo "--"; echo
+	  fi
+
+	  # List status of remote sites.
+	  echo "Status of remote sites:"
+	  uustat -m
+	  echo
+
+	  # And say goodbye.
+	  echo "Sincerely, the daily UUCP daemon."
+	) > $TMP5 2>&1
+
+	SEND=`perl -e 'do "/etc/uucp/expire" || die("Cannot do /etc/uucp/expire: $!\n");
+			$important_only = 0 unless defined $important_only;
+			$report_interesting = $ARGV[0];
+			$send = ! $important_only || $report_interesting ?
+					1 :
+					0;
+			print $send;' $REPORT_INTERESTING`;
+	if [ $SEND -gt 0 ]; then
+		$MAIL $1 < $TMP5
+	fi
+fi
+
+# Remove temp files.
+rm -f $TMP1 $TMP2 $TMP3 $TMP4 $TMP5
+
+# End of uudemon.day.
+exit 0

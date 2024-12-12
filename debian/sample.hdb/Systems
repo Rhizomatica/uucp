@@ -1,0 +1,18 @@
+#
+#	This is an off-the-cuff Systems file example, mostly swiped from
+#   my own system.  -- dhs@firefly.com
+#
+
+
+#  Dial-in to a terminal server.  Log in to the terminal server.  Run the
+#  program ``access'' with the space-separated option ``system3''.  Log
+#  onto system3, which will run the far end of the uucico connection.
+upin Any ACU 38400 5551212 "" \r\d\r\d\r name:-\r-name:-\r-name user23 assword: rjk345 server>-\r-server>-\r-server> access\ssystem3\r ogin: user23 assword: rjk345
+
+#  Same as above, but with the addition of a prefix to dial out of a hotel
+#  telephone system.  Note that the call is now long-distance.  Also, note
+#  that this entry is commented out, as there can only be one entry for a
+#  system.
+#upin Any ACU 38400 8,17035551212 "" \r\d\r\d\r name:-\r-name:-\r-name user23 assword: rjk345 server>-\r-server>-\r-server> access\ssystem3\r ogin: user23 assword: rjk345
+
+neon Any Direct 9600 \r ogin:--ogin:--ogin: ulichen word: tru5ted

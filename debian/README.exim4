@@ -1,0 +1,8 @@
+How to put exim4 and uucp together is documented in the
+/usr/share/doc/exim4-base/README.Debian.gz explains the UUCP setup in
+section 2.10:
+
+   2. Configuration of Exim 4 in the Debian packages
+        2.10. Putting Exim 4 and UUCP together
+
+

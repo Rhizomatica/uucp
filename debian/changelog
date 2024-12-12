@@ -1,0 +1,702 @@
+uucp (1.07-30) unstable; urgency=medium
+
+  * fix issues with gcc14 (Closes: #1075610)
+
+ -- Thorsten Alteholz <debian@alteholz.de>  Sun, 28 Jul 2024 13:00:00 +0200
+
+uucp (1.07-29) unstable; urgency=medium
+
+  * take care of implicit function declaration (Closes: #1066434)
+    (this even affects the configure script)
+
+ -- Thorsten Alteholz <debian@alteholz.de>  Fri, 12 Apr 2024 22:00:00 +0200
+
+uucp (1.07-28) unstable; urgency=medium
+
+  * Fix FTBFS when dh_installsystemd moves units to /usr
+    Thanks to Helmut Grohne for the patch
+    (Closes: #1052716)
+  * debian/control: bump standard to 4.6.2 (no changes)
+  * debian/patches: no need to forward them to upstream
+
+ -- Thorsten Alteholz <debian@alteholz.de>  Tue, 03 Oct 2023 18:00:00 +0200
+
+uucp (1.07-27) unstable; urgency=medium
+
+  * add improved-pipe.patch to be able to replace the placeholder \Z
+    by the system name of the called system
+    thanks to Rafael Diniz for the patch
+
+ -- Thorsten Alteholz <debian@alteholz.de>  Sat, 17 Aug 2019 22:00:00 +0200
+
+uucp (1.07-26) unstable; urgency=medium
+
+  * debian/control: add Salsa VCS URLs
+  * debian/control: no longer Depend: on inetd but only Recommends:
+                    (Closes: #589535)
+  * debian/control: no longer Depend: on cu but only Recommends:
+  * debian/uucp.postinst: only call update-inetd when available
+                    (Closes: #919277)
+  * debian/uucp.postinst: remove code for old version no longer
+                          available in any release
+  * debian/uucp.postrm: avoid paths
+  * add service file for uucp, don't automatically use it
+    (thanks to Jörg Sommer for the service file)
+  * add patch to wait for correct parent (Closes: #922438)
+    (thanks to Jörg Sommer for the patch)
+
+ -- Thorsten Alteholz <debian@alteholz.de>  Sat, 02 Mar 2019 16:00:00 +0100
+
+uucp (1.07-25) sid; urgency=medium
+
+  * debian/control: use dh11
+  * debian/control: bump standard to 4.3.0 (no changes)
+  * debian/control: no longer depend on exim
+  * debian/control: add ORed dependency on cron-daemon (Closes: #877059)
+                    Thanks to Jörg Sommer for the hint.
+  * debian/rules: add hardening flags
+  * Fix FTCBFS: (Closes: #879580)
+    + Thanks to Helmut Grohne for the patch!
+    + Let dh_auto_build pass cross compilers to make in contrib.
+    + Use a triplet-prefixed CC in d/rules.
+  * debian/patches: improve spelling.patch
+  * debian/patches: improve manpage.patch (Closes: #902671)
+                    Thanks to Patrik Schindler for the hint.
+
+
+ -- Thorsten Alteholz <debian@alteholz.de>  Thu, 10 Jan 2019 19:00:00 +0100
+
+uucp (1.07-24) unstable; urgency=medium
+
+  * debian/control: bump standard to 4.1.0 (no changes)
+  * debian/control: use dh10
+  * debian/control: set priority to optional
+  * add option-to-not-force-hw-control.patch (Closes: #336996)
+    introduce option to disable hw control on serial line
+    thanks to Michal Suchanek for the patch
+  * avoid unnecessary sleeps (Closes: #760556, #675101)
+    thanke to Frank Heckenbach for the patch
+  * no longer depends on install-info (Closes: #724779)
+    (see 1.07-22 and #598904 for more info)
+  * keeping /etc/cron.d/uucp (Closes: #473203)
+  * Recommends: instead of Depends: on logrotate (Closes: #422969)
+  * fix spelling error in debian/contrib/in.uucpd.8
+
+ -- Thorsten Alteholz <debian@alteholz.de>  Wed, 27 Sep 2017 19:00:00 +0200
+
+uucp (1.07-23) unstable; urgency=medium
+
+  * upload to unstable now
+  * confirm NMU
+  * patch from NMU also closes: #759285
+    with patch from Marco d'Itri
+
+ -- Thorsten Alteholz <debian@alteholz.de>  Thu, 08 Oct 2015 19:00:00 +0200
+
+uucp (1.07-20.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Pass "-s /bin/sh" to "su uucp" to cope with the change of uucp's shell
+    in base-passwd 3.5.30 (closes: #734723).
+
+ -- Colin Watson <cjwatson@debian.org>  Fri, 17 Jan 2014 12:44:41 +0000
+
+uucp (1.07-22) experimental; urgency=low
+
+  * debian/README.Debian: correct path to info files (Closes: #453957)
+  * debian/README.exim4: update pointer to exim4 config
+  * debian/control: fix typo (Closes: #602629)
+  * debian/control: add 'serial' to description of cu (Closes: #358861)
+  * debian/rules: call to deprecated install-info comes from debhelper
+                  (thanks Guillem Jover for checking)
+                  (Closes: #598904)
+
+ -- Thorsten Alteholz <debian@alteholz.de>  Sat, 27 Jul 2013 12:00:00 +0200
+
+uucp (1.07-21) experimental; urgency=low
+
+  * New maintainer (Closes: #699118)
+  * upload to experimental
+  * debian/control: switch to dh 9
+  * debian/control: switch to standard 3.9.4
+  * debian/control: add homepage field
+  * debian/control: no need to Conflict: or Replace: with uucp v1.06 anymore
+  * debian/control: no need to Conflict: with tua 4.3-3 anymore
+  * debian/control: add ${misc:Depends} to binary uucp package
+  * debian/control: add bsd-mailx as real package to mailx dependency
+  * debian/source/format: use 3.0 (quilt)
+  * debian/copyright: change to machine readable format
+  * debian/patches: add patch to fix manpage issues and spelling error
+  * debian/watch: file added
+
+ -- Thorsten Alteholz <debian@alteholz.de>  Sun, 23 Jun 2013 11:00:00 +0200
+
+uucp (1.07-20) unstable; urgency=low
+
+  * New maintainer                  Closes: #517906
+    Thanks to Peter Palfrader and Christian Perrier for their
+    prior work on these packages.
+  * Update pointer to exim4 doc     Closes: #449172
+
+ -- Richard A Nelson (Rick) <cowboy@debian.org>  Mon, 02 Mar 2009 22:28:00 -0000
+
+uucp (1.07-19.3) unstable; urgency=low
+
+  * Non-maintainer upload to fix an error in former NMU
+  * Drop useless debian/po directory. Therefore, translations
+    are now longer used. Closes: #482133
+    With apologies to translators...
+
+ -- Christian Perrier <bubulle@debian.org>  Sat, 02 Aug 2008 22:12:33 +0200
+
+uucp (1.07-19.2) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Drop debconf note dealing with an obsolete transition. Therefore
+    drop the .config script and dependency on debconf.
+    Closes: #414752
+  * [Lintian] Add copyright notice to debian/copyright
+  * [Lintian] Make the package binNMUable by using a ${binary:Version}
+    versioned dependency instead of ${Source-Version}
+  * [Lintian] No longer ignore errors from "make distclean"
+  * [Lintian] Set debhelper compatibility in debian/compat
+  * [Lintian] uucp Depends on "openbsd-inetd | inet-superserver" as it
+    uses update-inet.d in its postinst script
+
+ -- Christian Perrier <bubulle@debian.org>  Tue, 22 Apr 2008 23:07:27 +0200
+
+uucp (1.07-19.1) unstable; urgency=low
+
+  * Non-maintainer upload to fix pending debconf l10n bugs.
+  * Debconf translations:
+    - Portuguese. Closes: #383748
+
+ -- Christian Perrier <bubulle@debian.org>  Fri, 16 Feb 2007 07:56:00 +0100
+
+uucp (1.07-19) unstable; urgency=low
+
+  * Only call update-inetd --remove in postrm purge when a
+    /usr/sbin/update-inetd still exists (closes: #389354).
+
+ -- Peter Palfrader <weasel@debian.org>  Mon, 25 Sep 2006 11:26:36 +0200
+
+uucp (1.07-18) unstable; urgency=low
+
+  * contrib/uudemon.day: Make sure we append our individual reports to the
+    tempfiles instead of overwriting them with every new system.  Thanks
+    to Klaus for the report and patch (closes: #349996).
+  * Only pass --host $(DEB_HOST_GNU_TYPE) to configure when it is different
+    from DEB_BUILD_GNU_TYPE.
+  * Instead of only setting CFLAGS to '-Wall -g' if they aren't set, always
+    add those two.
+  * Remove DEB_BUILD_OPTIONS 'nostrip' handling from debian/rules.  dh_strip
+    does it all for us anyway.
+  * Remove DEB_BUILD_OPTIONS 'debug' handling from debian/rules.  It's
+    obsolete and we already build with -g anyway.
+  * Support DEB_BUILD_OPTIONS 'noopt' and build with -O2 if it is not set,
+    and with -O0 if it is.
+  * Remove -s from LDFLAGS in contrib/Makefile.uurt, dh_strip does the right
+    thing later on.
+  * Instead of 'cd contrib; make ...' do 'cd contrib && make ...'.
+  * Remove the -Wall from cc arguments for building contrib/in.uucpd.c.
+    It's already included in $(CFLAGS).
+  * Use debian/rules' CFLAGS in contrib/Makefile.uurt.
+  * Change to debhelper compatiblity level 4 (from 3) (only updating
+    DH_COMPAT setting in debian/rules required)
+  * Update Standards-Version from 3.6.2 to 3.7.2 (no additional changes
+    necessary)
+
+ -- Peter Palfrader <weasel@debian.org>  Sun, 18 Jun 2006 02:25:29 +0200
+
+uucp (1.07-17) unstable; urgency=low
+
+  * Add swedish translation for debconf note (closes: #332364).
+  * Add a note that more translations are probably a waste of time.  The
+    message is shown only on upgrades to woody (from potato).  :)
+
+ -- Peter Palfrader <weasel@debian.org>  Mon, 10 Oct 2005 04:04:29 +0200
+
+uucp (1.07-16) unstable; urgency=low
+
+  * Depend on 'debconf | debconf-2.0' rather than just debconf.
+
+ -- Peter Palfrader <weasel@debian.org>  Mon, 26 Sep 2005 20:14:27 +0200
+
+uucp (1.07-15) unstable; urgency=low
+
+  * Fix typo in debconf templates (closes: #324071).
+  * Add Russian and Vietnamese translations for debconf templates
+    (closes: #324072, #311918).
+  * Use start-stop-daemon with --exec /usr/lib/uucp/uucico instead
+    of 'killall uucp' in prerm
+
+ -- Peter Palfrader <weasel@debian.org>  Wed, 21 Sep 2005 02:44:03 +0200
+
+uucp (1.07-14) unstable; urgency=low
+
+  * Update FSF snail mail address in debian/copyright.
+  * Since uucp.postinst and uucp.prerm call update-inetd we need to
+    depend on netbase - add this.
+  * Lintian override killall-is-dangerous.
+  * Add "@dircategory Networking tools" to uucp.texi.
+  * One only needs the "master" info file, like 'uucp.info', not every
+    part like 'uucp.info-1' thru -8 in debian/uucp.info.  Remove the
+    rest, since the new makeinfo only splits it into 2 files anyway.
+  * And increase standards-version from 3.6.1 to 3.6.2.
+
+ -- Peter Palfrader <weasel@debian.org>  Mon, 19 Sep 2005 19:33:18 +0200
+
+uucp (1.07-13) unstable; urgency=low
+
+  * Upgrade from pre 1.07-10 would fail if there is no /etc/uucp/call
+    file.  Make the chowning in postinst conditional on existance of
+    the file.  Thanks to Michael Tokarev for reporting this problem
+    (closes: #312466).
+
+ -- Peter Palfrader <weasel@debian.org>  Wed,  8 Jun 2005 12:37:07 +0200
+
+uucp (1.07-12) unstable; urgency=medium
+
+  * Add cs localisation for debconf templates (closes: #287305).
+
+ -- Peter Palfrader <weasel@debian.org>  Thu, 30 Dec 2004 15:30:22 +0100
+
+uucp (1.07-11) unstable; urgency=low
+
+  * add japanese localisation for debconf templates (closes: #270758).
+  * Acknowledge aba's NMU for german localisation, thanks (closes: #267129).
+  * replace README.exim with a pointer to
+    usr/share/doc/exim4-base/README.Debian.UUCP.
+
+ -- Peter Palfrader <weasel@debian.org>  Tue, 28 Sep 2004 21:07:46 +0200
+
+uucp (1.07-10.1) unstable; urgency=low
+
+  * NMU on request of maintainer.
+  * add german localisation. Closes: #267129
+
+ -- Andreas Barth <aba@not.so.argh.org>  Fri, 20 Aug 2004 15:33:07 +0200
+
+uucp (1.07-10) unstable; urgency=low
+
+  * Do away the wrapper and make call owned by uucp.  Not really a perfect
+    solution but there are use cases that appear to really need it.
+
+ -- Peter Palfrader <weasel@debian.org>  Tue,  6 Jul 2004 16:20:38 +0200
+
+uucp (1.07-9) unstable; urgency=low
+
+  * Obey nostrip option, thanks Joerg  (closes: #257275).
+  * Move uucico to uucico.real and have a new uucico wrapper.
+    This wrapper, if run as root, sets the list of supplementary
+    groups for this process to the supplementary groups of the
+    uucp user.
+    The uucico program needs to have uucp in its supplementary groups
+    because it is setuid/gid uucp:dialout and needs to read /etc/uucp/call,
+    which is 640 root:uucp.
+    Previously one had to ivoke uucico as user uucp (using sudo or su or a
+    similar means), now ivoking it as root should work too.
+
+ -- Peter Palfrader <weasel@debian.org>  Tue,  6 Jul 2004 15:13:40 +0200
+
+uucp (1.07-8) unstable; urgency=low
+
+  * Add catalan translation for debconf templates (closes: #248763).
+
+ -- Peter Palfrader <weasel@debian.org>  Thu, 10 Jun 2004 14:29:46 +0200
+
+uucp (1.07-7) unstable; urgency=low
+
+  * Check if Log.1 and Stats.1 exist in uudemon.day.
+    (closes: #243046).
+  * Write a README.postfix file.
+  * Split README.sendmail off README.Debian.
+  * Include aba's README.exim4.  thanks.  (closes: #201153).
+  * Looks like we have examples for other MTAs now too.
+    closes: #215331: please have examples for other MTA's in README.Debian
+  * Set Standards-Version to 3.6.1.
+
+ -- Peter Palfrader <weasel@debian.org>  Sun, 25 Apr 2004 20:49:28 +0200
+
+uucp (1.07-6) unstable; urgency=low
+
+  * Recommend postfix | exim4 | exim | smail | courier-mta | zmailer | rmail.
+    closes: #232664
+
+ -- Peter Palfrader <weasel@debian.org>  Sun, 28 Mar 2004 17:36:37 +0200
+
+uucp (1.07-5) unstable; urgency=low
+
+  * Remove notifempty from uucp's logrotate.  That way we
+    don't report the same stats over and over again if there was
+    no traffic that day  (No traffic!?  that cannot happen anyway, right?)
+    (closes: #239124).
+
+ -- Peter Palfrader <weasel@debian.org>  Sun, 21 Mar 2004 13:05:19 +0100
+
+uucp (1.07-4) unstable; urgency=low
+
+  * proty.c: Don't use asm if you don't have to: always use the c
+    implementation of ROTATE. Thanks to Sven Gohlke <sven@clio.in-berlin.de>
+    and Thanks to Gernot Zander <hifi@scorpio.in-berlin.de>
+    (closes: #222942).
+
+ -- Peter Palfrader <weasel@debian.org>  Sat, 13 Mar 2004 19:33:18 +0100
+
+uucp (1.07-3) unstable; urgency=low
+
+  * Remove the usr/share/info/dir* files at a later time.
+
+ -- Peter Palfrader <weasel@debian.org>  Wed, 15 Oct 2003 13:57:01 +0200
+
+uucp (1.07-2) unstable; urgency=low
+
+  * Change pam.d/uucp to no longer reference pam_unix directly but instead
+    include common-*.  This adds a new versioned dependency on
+    libpam-runtime (>= 0.76-13.1).
+  * Work around a bug in automake that creates usr/share/info/dir* files
+    by removing them after make install (closes: #215749).
+
+ -- Peter Palfrader <weasel@debian.org>  Tue, 14 Oct 2003 16:47:54 +0200
+
+uucp (1.07-1) unstable; urgency=low
+
+  * New upstream version.
+  * Undo manual hyphenation in uc's description.
+    (closes: #175837: cu: Long description contains hyphen).
+  * Conflict with tua prior to 4.3-3.  Earlier versions read the
+    old <file>.0 rotated files rather than logrotate's <file>.1
+    (closes: #186954).
+  * Fix XSIism in uupoll.  Thanks to  Clint Adams.
+    (closes: #203213).
+  * Use a better way to find the current hour in uudemon.hr.
+    (closes: #213419).
+  * Change pointer to documentation from usr/doc to usr/share/doc in
+    README.Debian (closes: #212713).
+  * Debconf internationialization.
+    closes: #199254 Please switch to gettext for the debconf templates
+    closes: #200200 Please add french translation of the debconf templates
+  * Add uucp.texi to docs (closes: #210983).
+  * Use definition from <sys/param.h> for max hostnamelength in uurate
+    (closes: #199475).
+  * Process Log.1 and Stats.1 rather than Log and Stats in uudaemon.day
+    as the files have been rotated by logrotate already (closes: #179749).
+  * Apply patch for address wildcards for uucp pipe-ports by Joerg Dorchain
+    (closes: #201212).
+  * Document debian specific behaviour in README.Debian.
+
+ -- Peter Palfrader <weasel@debian.org>  Mon, 13 Oct 2003 01:44:20 +0200
+
+uucp (1.06.1+1.07beta1-patch2-3) unstable; urgency=low
+
+  * Upload to unstable (adds binary package cu).
+    (closes: #70746: Please separate "cu" from the rest of uucp).
+  * Fix uudaemon.day to also remove files older than <expire>, not just those
+    exactly <expire> days old.  Also handle the case where find prints
+    warnings better.
+    Thanks to Paul Slootman <paul@debian.org>.
+    (closes: #173013).
+  * daily UUCP report mail message sets Precedence: header now.
+    (closes: #175005).
+  * Have an option in etc/uucp/expire ($important_only) to suppress
+    uucp's daily mail unless there's something interesting.
+    (closes: #154892 uucp: please send daily mail only if important).
+  * Load debconfmodule even tho we don't use debconf in postinst.
+    Lintian suggested that. It probably can be removed again in the future
+    after debconf is fixed.
+
+ -- Peter Palfrader <weasel@debian.org>  Sun,  5 Jan 2003 06:24:13 +0100
+
+uucp (1.06.1+1.07beta1-patch2-2) experimental; urgency=low
+
+  * uucp really is not a native package.
+
+ -- Peter Palfrader <weasel@debian.org>  Wed, 31 Jul 2002 15:00:38 +0200
+
+uucp (1.06.1+1.07beta1-patch2-1) experimental; urgency=low
+
+  * **** EXPERIMENTAL TREE ****
+  * new upstream version pre release:
+    - only patch reapplied is Christian Kurz's uucico grade patch.
+    - all other patches seem to either have been included in or obsoleted by
+      this release.
+  * Completely repackaged:
+    - Uses debhelper.
+    - cu split into own package (will close: #70746: Please separate "cu" from
+      the rest of uucp).
+  * Remove fix for broken 1.06.1-4 installations: 1.06.1-4 was over five years
+    ago.
+  * Diffing --contents to previous version shows that a few manpages changed
+    their location (directory wise) to match their section.
+
+ -- Peter Palfrader <weasel@debian.org>  Wed, 31 Jul 2002 01:29:41 +0200
+
+uucp (1.06.1-20) unstable; urgency=low
+
+  * in.uucpd(8) is a proper manpage now.
+  * Don't create usr/doc link any longer.
+  * New Standards-Version: 3.5.7
+
+ -- Peter Palfrader <weasel@debian.org>  Thu, 21 Nov 2002 01:23:05 +0100
+
+uucp (1.06.1-19) unstable; urgency=low
+
+  * Check whether executeable exists before calling it in crontab.
+  * Moved uudemon.day call to a cron.daily script.
+    Closes: #152463: crontab in /etc/cron.d/
+    Closes: #60723: daily UUCP report should be sent via cron.daily
+  * Removed log cycle code from uudemon.day, using logrotate now.
+    - Depends: logrotate
+    Closes: #134631: Please use logrotate
+    Closes: #144791: uucp lacks /etc/lockrotate.d entry
+  * Because of moving the report to its own script and using logrotate
+    Bug #154459 is no longer valid.
+    Closes: #154459: comment in /etc/cron.d/uucp is mistakable
+  * Set uuxqt sgid uucp in addition to suid uucp. This makes it possible
+    for applications like rnews to be suid <otheruser> with group ownership
+    uucp and mode 04754 to restrict execution to the uucp system only.
+    Closes: #32871: Make uuxqt SGID uucp (for INN 2.*)
+
+ -- Peter Palfrader <weasel@debian.org>  Mon, 29 Jul 2002 20:20:24 +0200
+
+uucp (1.06.1-18) unstable; urgency=medium
+
+  * Fix potential buffer overflow in uucpd.
+    Thanks to Matthew Grant <grantma@anathoth.gen.nz> for pointing it
+    out and providing a patch.
+  * Fix uucp crontab problem: The old crontab was mangled upon upgrade.
+    Make a new one in /etc/cron.d/uucp and ignore the old one.
+    Inform user to fix manually via debconf (closes: #134545).
+  * Depend on debconf (see point above).
+    Requires some changes to {post,pre}{rm,inst} and rules file.
+  * Make everything below /etc/uucp/ (including) owned by root.
+
+ -- Peter Palfrader <weasel@debian.org>  Tue,  9 Apr 2002 18:24:58 +0200
+
+uucp (1.06.1-17) unstable; urgency=high
+
+  * Fixed exploit that allowed to gain uid.guid uucp.uucp again:
+    The patch used in 1.06.1-11potato1 did fix the original exploit but
+    not variations of it. Reversed old patch and using the one by Ian
+    Taylor.  Hopefully this fixes the issue correctly (Closes: #132753).
+  * Applied Alex King's second patch which fixes a pam issue:
+   | When I was reviewing the code though, I realise I have made a basic
+   | error.  I did not check the return code of the misc_conv function I
+   | called.  This will probably make very little difference, but to be
+   | correct I have included a patch to fix it.
+
+ -- Peter Palfrader <weasel@debian.org>  Fri,  8 Feb 2002 03:30:35 +0100
+
+uucp (1.06.1-16) unstable; urgency=low
+
+  * Quote CFLAGS in debian/rules (closes: #127891 - Can't build from
+    source when CFLAGS contains more than one item).
+  * Make sure /usr/sbin is mode 0755 and not 0775.
+
+ -- Peter Palfrader <weasel@debian.org>  Sat,  5 Jan 2002 19:27:53 +0100
+
+uucp (1.06.1-15) unstable; urgency=high
+
+  * Fixed exploit that allowed to gain uid.guid uucp.uucp:
+    Applied patch that blocks the long arg variants of -I -u -g in uuxqt
+    (taken from Calderas security update; From: Jeff Johnson <jbj@redhat.com>)
+  * Changed priority to extra to match override file.
+
+ -- Peter Palfrader <weasel@debian.org>  Mon, 30 Jul 2001 21:24:09 +0200
+
+uucp (1.06.1-14) unstable; urgency=low
+
+  * uucpd now has PAM support. Thanks to
+    Alex King <alex@milton.king.net.nz> for providing the patch.
+    Build-Depends on libpam-dev now.
+  * Added manpages: uulog.1, uuname.1, uupick.1, uupoll.1, uusched.1,
+    uuto.1 (closes: #9590).
+    Thanks to Kevin Kreamer <kkreamer@etherhogz.org> for writing them.
+  * Upped Standards-Version to 3.5.6:
+    Support for DEB_BUILD_OPTIONS: nostrip and debug.
+  * Clarified and Updated uucpd manpage (uucpd does _not_ authenticate
+    against /etc/uucp/passwd but uses pam; closes: #53558).
+  * Added Lintain overrides file for non-standard-{file,dir}-permissions
+    and suid-[gid-]binaries.
+  * Use --quiet and --section with install-info in postinst.
+  * Moved install-info --remove from postrm to prerm.
+  * Clarified 'Do not edit crontab directly' warning in /etc/uucp/crontab
+    (closes: #76818).
+
+ -- Peter Palfrader <weasel@debian.org>  Mon, 30 Jul 2001 05:25:18 +0200
+
+uucp (1.06.1-13) unstable; urgency=low
+
+  * Fixed permission of some files (closes: #78925)
+
+ -- Peter Palfrader <weasel@debian.org>  Wed,  6 Dec 2000 18:12:28 +0100
+
+uucp (1.06.1-12) unstable; urgency=low
+
+  * New maintainer.
+  * uustat now displays the entire queue instead of the first 201 entries
+    (Martin Schulze <joey@infodrom.north.de>, closes: #38460).
+  * uudemon.day's daily report now includes the system name in the subject
+    line (closes: #43003, #64534).
+  * changed uudemon.day's daily report to fit in 80 columns
+    (Ed Doolittle <dolittle@math.toronto.edu>, closes: #16145, #42645).
+  * expire times, which where previosly hardcoded in uudemon.day, are now
+    configureable (closes: #22492, #33030).
+  * New address of the FSF.
+  * Updated pointer to full text of the GPL.
+  * Moved doc, info, and man from /usr to /usr/share.
+  * Made /usr/sbin/uucico a relative symlink to /usr/lib/uucp/uucico;
+    was absolute.
+  * Changed ownership of /usr/lib/uucp/uuchk, /usr/lib/uucp/uuconv from
+    root.uucp to root.root.
+  * Changed ownership of /usr/sbin/in.uucpd, /usr/sbin/uupoll,
+    /usr/sbin/uurate, /usr/sbin/uusched from uucp.root to root.root.
+  * Added a bogus in.uucpd.8 manpage (append comment to #9590 when installed!).
+  * Include Section and Priority in DEBIAN/control.
+  * Added Build-Depends.
+  * Updated Standards-Version.
+
+ -- Peter Palfrader <weasel@debian.org>  Tue,  5 Dec 2000 12:27:48 +0100
+
+uucp (1.06.1-11) unstable; urgency=low
+  * New bug fix release thanks to Christian Kurz <shorty@debian.org>
+    who kept bugging me until I finally decided to work on uucp :)
+  * Fixes bugs:
+    #28743: uucp remove script doesn't remove /etc/cron.daily/uucp
+    (well, there's nothing to fix. uucp doesn't include this file!)
+    #28796: uucp: locking problem
+    #28853: uucp: "commands ALL" doesn't work
+    (it does work!)
+    #32811: uucp: uucico -p PORT uses wrong alternatives
+    #32812: uucp: sendmail should be searched in /usr/sbin, not /usr/lib
+    #32813: uucp: How to create UUCP accounts?
+    #35988: uucp: uudemon.hr says /var/spool/uucp/$SYSTEM/C./ doesn't exist
+    #35989: uucp: permissions on sys file should be more restrictive
+    #31207: wishlist: uucp should also poll if there is work (w/o schedule)
+
+ -- Miquel van Smoorenburg <miquels@cistron.nl>  Wed, 21 Apr 1999 22:04:57 +0200
+
+uucp (1.06.1-10) unstable; urgency=low
+
+  * Add uucpd
+  * Fixes bugs:
+    #21719: uucp: No uucp entry in inetd.conf
+    #25976: uucp should provide inetd service
+    #22394: [bharries@vossnet.de: uucp Debian package for linux-m68k]
+
+ -- Miquel van Smoorenburg <miquels@cistron.nl>  Mon,  5 Oct 1998 13:15:17 +0200
+
+uucp (1.06.1-9) unstable; urgency=low
+
+  * Fix lintian warnings
+  * Use new crontab -l method
+  * Fixes bugs:
+    #14841: UUCP scripts [was: Re: [root: Cron <uucp@dungeon> /usr/lib/uucp/uud
+    #17443: README typo in UUCP package
+    #17444: README typo in UUCP package
+    #14474: /usr/doc/$(PACKAGE)/copyright should not be compressed
+
+ -- Miquel van Smoorenburg <miquels@cistron.nl>  Tue,  3 Mar 1998 16:19:57 +0100
+
+uucp (1.06.1-8) unstable; urgency=low
+
+  * Fix bugs:
+    #13890: uucp: binary-arch depends on a target which is only built...
+  * Add patch to fix uucico FPE (from Cameron Schaus <cam@cambo.cuug.ab.ca>)
+
+ -- Miquel van Smoorenburg <miquels@cistron.nl>  Tue, 28 Oct 1997 18:07:04 +0100
+
+uucp (1.06.1-7) unstable; urgency=low
+
+  * Libc6 version.
+
+ -- Miquel van Smoorenburg <miquels@cistron.nl>  Wed, 24 Sep 1997 13:01:20 +0200
+
+uucp (1.06.1-6) frozen unstable; urgency=medium
+
+  * Fixed the uupoll script to work with latest fileutils (tail).
+  * Sample configs now use ttySx instead of cuax
+  * Move uucico to /usr/lib/uucp. Chmod that dir to 770. Symlink from
+    /usr/sbin to /usr/lib/uucp. This way, only users in the uucp group
+    can call uucico, while uucico still is setgid dialout.
+
+ -- Miquel van Smoorenburg <miquels@cistron.nl>  Mon, 5 May 1997 19:46:29 +0200
+
+uucp (1.06.1-5) unstable; urgency=high
+
+  * Renamed /etc/uucp/callout back to /etc/uucp/call. Preinst tries
+    to fix up the previous release.
+  * Fixed daily script to create empty logfiles after rotation.
+
+ -- Miquel van Smoorenburg <miquels@cistron.nl>  Tue, 11 Feb 1997 21:38:25 +0100
+
+uucp (1.06.1-4) unstable; urgency=low
+
+  * Added manpage stubs
+  * Fixed owner and modes of files in /etc/uucp
+  * Added small patch for trans.c
+  * Adheres to latest packaging standards (I hope)
+
+ -- Miquel van Smoorenburg <miquels@cistron.nl>  Tue, 4 Feb 1997 09:48:03 +0100
+
+uucp (1.06.1-3) unstable; urgency=low
+
+  * Upgraded to ELF and new source packaging schema
+  * Now uses /usr/lib/uucp for some private executables
+  * Installed some sensible defaults
+  * Provided debian-setup information
+  * Added some more scripts to automate maintenance
+
+ -- Miquel van Smoorenburg <miquels@cistron.nl>  Fri, 20 Dec 1996 11:54:10 +0100
+
+uucp (1.06.1-2)
+  Wed Oct 18 07:03:23 EDT 1995
+  * Modified HDB Dialers example to force command echo to ON.  Wrote up
+    comments for this file.
+
+uucp (1.06.1-1)
+  * Upgraded to current version if taylor-uucp.
+
+uucp (1.05-5)
+  * Changed ``Recommended:'' and ``Optional:'' lists to end with virtual
+    package names.
+  * Set owner of /usr/sbin/uucico to uucp and group to dialout in debian.rules.
+  * Fix permissions of Debug.n.gz files created by savelog in the
+    /etc/cron.daily/uucp script.
+
+uucp (1.05-4)
+  * Fixed debian.rules to not generate bogus "\n\n" string in release notes.
+  * Changed comment on debian.crontab.
+  * Changed contents of sample-hdb/Permissions to reflect less acurately
+    my own system.
+  * Changed owner of /var/log/uucp to uucp.
+  * Created a stub uucpconfig and fixed debian.rules to put it into
+    /usr/sbin so that the postinst script will be able to run correctly.
+  * Removed the commands to create the old configuration directory
+    (/usr/lib/uucp) from debian.rules.
+  * Added dependancy on cron.
+  * Created a debian.conffiles file and made sure that debian.rules will
+    install it.
+  * Created a script to be installed as /etc/cron.daily/uucp to rotate the
+    log files.
+  * Created a crontab file to be installed as /etc/uucp/crontab for the
+    system administrator to configure and use as the uucp user's crontab
+    file.
+  * Move the current set of examples into /usr/doc/examples/uucp/taylor.
+    Make a set of HDB examples under /usr/doc/examples/uucp/hdb.
+  * Upgrade optimization to -O3 in an attempt to make this thing
+    less huge.
+  * Changed ALLOW_FILENAME_ARGUMENTS (in policy.h) to 0 so as to disable
+    the use of arguments to rmail & rnews.
+  * Moved the log files to /var/log/uucp/* (in the policy.h file).
+  * Made debian.rules create /etc/uucp and /var/log/uucp.
+  * Switch to using ``/etc/uucp'' as the directory for HDB-style
+    configuration files.  The Taylor-style configuration files
+    already use this directory.  Hopefully, they do not conflict.
+  * Build this file into the automatically generated release notes.
+    (I should edit out the old changes by hand.)
+  * Build ``uucp.info*'' out of ``uucp.texi''.
+    Install info files in ``/usr/info''.
+    List uucp in the info directory.
+
+ -- David H. Silber <dhs@firefly.com>  Thu Aug 10 01:12:46 EDT 1995

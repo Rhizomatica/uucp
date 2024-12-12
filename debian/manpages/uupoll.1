@@ -1,0 +1,27 @@
+.\" This is under the same license as uupoll itself
+.TH UUPOLL 1
+.SH NAME
+uupoll \- Poll a system manually
+.SH SYNOPSIS
+.B uupoll
+[\fI-n\fR] [\fI-xNUM\fR] <\fBsystem\fR>
+.SH DESCRIPTION
+.I Uupoll
+is a program that polls a system manually like uudemon.hr would do when 
+the system is scheduled.  This shell script assumes Taylor UUCP and 
+Taylor style log files.
+.SH OPTIONS
+.TP
+\fB-n\fR
+Do not batch news for this system.
+.TP
+\fB-xNUM\fR
+Set the debugging level to \fBNUM\fR.
+.SH BUGS
+None apparent.
+.SH "SEE ALSO"
+.BR uucp(1),
+.BR sh(1)
+.SH AUTHOR
+This manual page is a quick write-up for Debian done by Kevin Kreamer 
+<kkreamer@etherhogz.org>.

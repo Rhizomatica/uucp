@@ -1,0 +1,24 @@
+/var/log/uucp/Log {
+	daily
+	missingok
+	rotate 7
+	compress
+	delaycompress
+	create 0644 uucp uucp
+}
+/var/log/uucp/Stats {
+	daily
+	missingok
+	rotate 7
+	compress
+	delaycompress
+	create 0644 uucp uucp
+}
+/var/log/uucp/Debug {
+	daily
+	missingok
+	rotate 7
+	compress
+	delaycompress
+	create 0600 uucp uucp
+}

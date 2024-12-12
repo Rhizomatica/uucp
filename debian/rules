@@ -1,0 +1,119 @@
+#!/usr/bin/make -f
+
+#export DH_VERBOSE=1
+
+# These are used for cross-compiling and for saving the configure script
+# from having to guess our platform (since we know it already)
+include /usr/share/dpkg/architecture.mk
+ifeq ($(DEB_BUILD_GNU_TYPE), $(DEB_HOST_GNU_TYPE))
+  confflags += --build $(DEB_HOST_GNU_TYPE)
+else
+  confflags += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
+endif
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+ifeq ($(origin CC),default)
+CC = $(DEB_HOST_GNU_TYPE)-gcc
+endif
+CFLAGS += -Wall -g $(LDFLAGS) $(CPPFLAGS)
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	./configure \
+		$(confflags) \
+		--prefix=/usr \
+		--exec-prefix=/usr \
+		--mandir=\$${prefix}/share/man \
+		--infodir=\$${prefix}/share/info \
+		--with-newconfigdir=/etc/uucp \
+		--with-oldconfigdir=/etc/uucp
+
+override_dh_auto_clean:
+	dh_clean
+	[ ! -f Makefile ] || $(MAKE) distclean
+	rm -f contrib/uurate
+	rm -f build debian/contrib/in.uucpd
+
+override_dh_auto_build:
+	$(MAKE) CFLAGS="$(CFLAGS)"
+	dh_auto_build --buildsystem=makefile --sourcedirectory=contrib -- \
+		-f Makefile.uurt CFLAGS="$(CFLAGS)" \
+	  	newconfigdir=/etc/uucp
+	$(CC) $(CFLAGS) -o debian/contrib/in.uucpd debian/contrib/in.uucpd.c -lpam -lpam_misc
+
+override_dh_fixperms:
+	dh_fixperms
+	#
+	# Refix ownership and permissions
+	#
+	chown -R root.root debian/uucp
+	chown -R root.root debian/cu
+	chown    root.uucp debian/uucp/etc/uucp/*
+	chown    root.uucp debian/cu/etc/uucp/*
+	#
+	chown uucp.uucp `pwd`/debian/uucp/usr/lib/uucp
+	chmod 00750     `pwd`/debian/uucp/usr/lib/uucp
+	chown uucp.uucp `pwd`/debian/uucp/var/log/uucp
+	chown uucp.uucp `pwd`/debian/uucp/var/spool/uucp
+	chown uucp.uucp `pwd`/debian/uucp/var/spool/uucppublic
+	chmod 01777     `pwd`/debian/uucp/var/spool/uucppublic
+	#
+	chown uucp.root `pwd`/debian/uucp/usr/bin/uustat
+	chown uucp.root `pwd`/debian/uucp/usr/bin/uux
+	chown uucp.root `pwd`/debian/uucp/usr/bin/uucp
+	chmod 04755     `pwd`/debian/uucp/usr/bin/uustat
+	chmod 04755     `pwd`/debian/uucp/usr/bin/uux
+	chmod 04755     `pwd`/debian/uucp/usr/bin/uucp
+	chown uucp.uucp `pwd`/debian/uucp/usr/sbin/uuxqt
+	chmod 06755     `pwd`/debian/uucp/usr/sbin/uuxqt
+	chown uucp.dialout `pwd`/debian/uucp/usr/lib/uucp/uucico
+	chmod 06755        `pwd`/debian/uucp/usr/lib/uucp/uucico
+	#
+	chmod 00640     `pwd`/debian/uucp/etc/uucp/call
+	chown uucp.uucp `pwd`/debian/uucp/etc/uucp/call
+	chmod 00640     `pwd`/debian/uucp/etc/uucp/passwd
+	# work around automake bug.  See #213371 and #214769
+	rm -f `pwd`/debian/uucp/usr/share/info/dir.gz `pwd`/debian/uucp/usr/share/info/dir.old.gz
+
+override_dh_auto_install:
+	dh_auto_install
+	make install \
+		bindir=`pwd`/debian/uucp/usr/bin \
+		sbindir=`pwd`/debian/uucp/usr/sbin \
+		newconfigdir=`pwd`/debian/uucp/etc/uucp \
+		oldconfigdir=`pwd`/debian/uucp/etc/uucp \
+		prefix=`pwd`/debian/uucp/usr \
+		exec_prefix=`pwd`/debian/uucp/usr
+	install -m 755 -g root contrib/uurate `pwd`/debian/uucp/usr/sbin
+	install -m 755 -g root debian/contrib/in.uucpd `pwd`/debian/uucp/usr/sbin/in.uucpd
+	mv `pwd`/debian/uucp/usr/sbin/uuchk `pwd`/debian/uucp/usr/lib/uucp
+	mv `pwd`/debian/uucp/usr/sbin/uuconv `pwd`/debian/uucp/usr/lib/uucp
+	mv `pwd`/debian/uucp/usr/sbin/uucico `pwd`/debian/uucp/usr/lib/uucp/uucico
+	#
+	install -m 755 -g root debian/contrib/uudemon.day `pwd`/debian/uucp/usr/lib/uucp
+	install -m 755 -g root debian/contrib/uudemon.hr `pwd`/debian/uucp/usr/lib/uucp
+	install -m 755 -g root debian/contrib/uutraf.pl `pwd`/debian/uucp/usr/lib/uucp
+	install -m 755 -g root debian/contrib/uupoll `pwd`/debian/uucp/usr/sbin
+	#
+	install -g root -m 644 debian/etc.uucp/* `pwd`/debian/uucp/etc/uucp
+	#
+	install -g root -m 644 debian/sample.hdb/* `pwd`/debian/uucp/usr/share/doc/uucp/examples/hdb
+	install -g root -m 644 debian/etc.uucp/* `pwd`/debian/uucp/usr/share/doc/uucp/examples/taylor
+	#
+	install -g root -m 644 debian/uucp.overrides `pwd`/debian/uucp/usr/share/lintian/overrides/uucp
+	#
+	dh_movefiles -p cu --sourcedir=debian/uucp
+
+# we now directly use the name of the service file
+#override_dh_installsystemd:
+#	dh_installsystemd
+#	# we come from an inetd service, so we have to set accept=yes in uucp.socket and such require the @
+#	mv `pwd`/debian/uucp/lib/systemd/system/uucp.service `pwd`/debian/uucp/lib/systemd/system/uucp@.service

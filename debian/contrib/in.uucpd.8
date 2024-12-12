@@ -1,0 +1,45 @@
+.TH UUCPD 8 "Apr 20, 1999" "" "Linux Administrator's Manual"
+.SH NAME
+uucpd, in.uucpd \- run uucico from inetd
+.SH SYNOPSIS
+.B /usr/sbin/in.uucpd
+.SH DESCRIPTION
+.B Uucpd
+is a program run from
+.B inetd
+when inetd detects a connect on the uucp port (usually
+.I 540
+). It uses pam to authenticate users. If access by pam would be granted,
+and the first six letters of the basename of the shell
+match the word
+.I uucico
+then an utmp and wtmp entry are written and the users shell is invoked.
+The uucpd process stays around until
+.B uucico
+exits, then updates the utmp and wtmp files once more.
+
+.SH OPTIONS
+None.
+.SH NOTES
+Uucico also has the possibility to check for loginname/password itself
+directly, instead of needing a frontend uucpd. However that does not
+work if the system has shadow passwords, or any other way of authentication
+which requires root privileges. Also, no utmp/wtmp records are written.
+.PP
+If you want to define UUCP accounts outside the password file (eg
+through
+.I /etc/uucp/passwd
+) you need to call
+.B uucico -l
+from
+.I /etc/inetd.conf
+instead of
+.B in.uucpd
+\.
+
+.SH AUTHOR
+Miquel van Smoorenburg (miquels@cistron.nl)
+.SH "SEE ALSO"
+.BR inetd (8),
+.BR inetd.conf (5),
+.BR uucico (8)

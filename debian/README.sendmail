@@ -1,0 +1,58 @@
+SETTING UP SENDMAIL FOR UUCP.
+
+Only the sendmail setup is described here; I don't know enough about
+smail to describe that.
+
+Your sendmail.cf file is generated from /etc/mail/sendmail.mc. So we
+have to fix /etc/mail/sendmail.mc to know about UUCP. Add the following
+to the end of /etc/mail/sendmail.mc (after "Custom configuration below"):
+
+  # Turn on UUCP mailer.
+  MAILER(uucp)dnl
+
+  # Use this to define a smart-host
+  # Use "hostname" or "protocol:hostname" (like uucp-dom:uucpgw).
+  define(`SMART_HOST', uucp-dom:uucp_name_of_provider)
+
+Note that the SMTP mailer _has_ to be defined for this to work. If
+it hasn't, re-run "sendmailconfig" to enable the SMTP mailer. The UUCP
+mailer definitions uses parts of it.
+
+Now run "sendmailconfig" and when it asks
+
+  Configure sendmail with the existing /etc/mail/sendmail.mc? [Y] 
+
+press enter.
+
+At this point all mail that is not for th local host will be sent out through
+the smarthost, which is the UUCP system. You might find that sendmail takes
+a long time to deliver mail to the UUCP queue; this is because it's probably
+trying to query the name server for various things. If so, re-run
+sendmailconfig and answer "No" when it asks "Enable DNS". Also, you have to
+answer "Yes" at the question "Disable address canonification".
+
+If you also want to send mail within the local network, things get complicated.
+The easiest way to go is then to setup a "mailer table" in which you can
+override how mail gets delivered. I'll give you one example. Add the
+following to your /etc/mail/sendmail.mc:
+
+  define(`MAILER_TABLE', `hash -o /etc/mail/mailertable')dnl
+
+Re-run sendmailconfig, press enter, but do NOT reload sendmail yet.
+
+Now put a file in /etc/mail called "mailertable" that has entries like this:
+
+  other.system.com	smtp:other.system.com
+  friend.uucp.site	uucp-dom:frienduucp
+
+Now we have to make the database file. In /etc/mail, run:
+
+  makemap hash mailertable < mailertable
+
+Then finally reload sendmail using:
+
+  /etc/init.d/sendmail reload.
+
+
+-- 
+22-Feb-1998  miquels@cistron.nl

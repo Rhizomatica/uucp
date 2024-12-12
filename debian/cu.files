@@ -1,0 +1,4 @@
+./usr/bin/cu
+./usr/share/man/man1/cu.1
+./etc/uucp/config
+./etc/uucp/sys

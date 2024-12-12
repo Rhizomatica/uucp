@@ -1,0 +1,19 @@
+#
+#	This is an off-the-cuff Permissions file example, mostly swiped
+#   from my own system.  -- dhs@firefly.com
+#
+
+MACHINE=neon MYNAME=firefly \
+COMMANDS=/usr/sbin/rmail:/usr/bin/uucp:/usr/bin/uucico \
+READ=/var/spool/uucppublic:/var/spool/uucp/neon \
+WRITE=/var/spool/uucppublic:/var/spool/uucp/neon \
+SENDFILES=yes \
+REQUEST=yes
+
+LOGNAME=uneon \
+COMMANDS=/usr/sbin/rmail:/usr/bin/uucp:/usr/bin/uucico \
+READ=/ \
+WRITE=/ \
+SENDFILES=yes \
+REQUEST=yes
+

@@ -1,0 +1,18 @@
+#
+#	This is an off-the-cuff Devices file example, mostly swiped from
+#   my own system.  -- dhs@firefly.com
+#
+
+#  This is for my modem
+# ACU ttyS1 - 2400 hayes
+## ACU ttyS0 - 2400 hayes
+ACU ttyS2 - 38400 hayes
+# ACU ttyS0 - 57600 hayes
+
+# set for COM1
+Direct,ag ttyS2 - 1200 direct
+Direct,ag ttyS2 - 2400 direct
+Direct,ag ttyS2 - 4800 direct
+Direct,ag ttyS2 - 9600 direct
+Direct,ag ttyS2 - 19200 direct
+Direct,ag ttyS2 - 38400 direct
