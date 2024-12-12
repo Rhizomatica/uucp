@@ -1,4 +1,4 @@
-This is uucp.info, produced by makeinfo version 4.11 from uucp.texi.
+This is uucp.info, produced by makeinfo version 7.1.1 from uucp.texi.
 
 INFO-DIR-SECTION Networking tools
 
@@ -8,7 +8,7 @@ END-INFO-DIR-ENTRY
 
    This file documents Taylor UUCP, version 1.07.
 
-   Copyright (C) 1992, 1993, 1994, 1995, 2002 Ian Lance Taylor
+   Copyright © 1992, 1993, 1994, 1995, 2002 Ian Lance Taylor
 
    Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -29,78 +29,78 @@ a translation approved by the author instead of in the original English.
 
 File: uucp.info,  Node: j Protocol,  Next: x Protocol,  Prev: i Protocol,  Up: Protocols
 
-6.12 UUCP `j' Protocol
+6.12 UUCP ‘j’ Protocol
 ======================
 
-The `j' protocol is a variant of the `i' protocol.  It was also written
+The ‘j’ protocol is a variant of the ‘i’ protocol.  It was also written
 by Ian Lance Taylor, and first appeared in Taylor UUCP version 1.04.
 
-   The `j' protocol is a version of the `i' protocol designed for
+   The ‘j’ protocol is a version of the ‘i’ protocol designed for
 communication links which intercept a few characters, such as XON or
-XOFF.  It is not efficient to use it on a link which intercepts many
-characters, such as a seven bit link.  The `j' protocol performs no
+XOFF. It is not efficient to use it on a link which intercepts many
+characters, such as a seven bit link.  The ‘j’ protocol performs no
 error correction or detection; that is presumed to be the responsibility
-of the `i' protocol.
+of the ‘i’ protocol.
 
-   When the `j' protocol starts up, each system sends a printable ASCII
+   When the ‘j’ protocol starts up, each system sends a printable ASCII
 string indicating which characters it wants to avoid using.  The string
-begins with the ASCII character `^' (octal 136) and ends with the ASCII
-character `~' (octal 176).  After sending this string, each system
-looks for the corresponding string from the remote system.  The strings
-are composed of escape sequences: `\ooo', where `o' is an octal digit.
-For example, sending the string `^\021\023~' means that the ASCII XON
-and XOFF characters should be avoided.  The union of the characters
-described in both strings (the string which is sent and the string
-which is received) is the set of characters which must be avoided in
-this conversation.  Avoiding a printable ASCII character (octal 040 to
-octal 176, inclusive) is not permitted.
+begins with the ASCII character ‘^’ (octal 136) and ends with the ASCII
+character ‘~’ (octal 176).  After sending this string, each system looks
+for the corresponding string from the remote system.  The strings are
+composed of escape sequences: ‘\ooo’, where ‘o’ is an octal digit.  For
+example, sending the string ‘^\021\023~’ means that the ASCII XON and
+XOFF characters should be avoided.  The union of the characters
+described in both strings (the string which is sent and the string which
+is received) is the set of characters which must be avoided in this
+conversation.  Avoiding a printable ASCII character (octal 040 to octal
+176, inclusive) is not permitted.
 
-   After the exchange of characters to avoid, the normal `i' protocol
-start up is done, and the rest of the conversation uses the normal `i'
-protocol.  However, each `i' protocol packet is wrapped to become a `j'
+   After the exchange of characters to avoid, the normal ‘i’ protocol
+start up is done, and the rest of the conversation uses the normal ‘i’
+protocol.  However, each ‘i’ protocol packet is wrapped to become a ‘j’
 protocol packet.
 
-   Each `j' protocol packet consists of a seven byte header, followed
-by data bytes, followed by index bytes, followed by a one byte trailer.
+   Each ‘j’ protocol packet consists of a seven byte header, followed by
+data bytes, followed by index bytes, followed by a one byte trailer.
 The packet header looks like this:
 
-`^'
-     Every packet begins with the ASCII character `^', octal 136.
+‘^’
+     Every packet begins with the ASCII character ‘^’, octal 136.
 
 HIGH
 LOW
      These two characters give the total number of bytes in the packet.
      Both HIGH and LOW are printable ASCII characters.  The length of
-     the packet is `(HIGH - 040) * 0100 + (LOW - 040)', where `040 <=
-     HIGH < 0177' and `040 <= LOW < 0140'.  This permits a length of
+     the packet is ‘(HIGH - 040) * 0100 + (LOW - 040)’, where ‘040 <=
+     HIGH < 0177’ and ‘040 <= LOW < 0140’.  This permits a length of
      6079 bytes, but there is a further restriction on packet size
      described below.
 
-`='
-     The ASCII character `=', octal 075.
+‘=’
+     The ASCII character ‘=’, octal 075.
 
 DATA-HIGH
 DATA-LOW
      These two characters give the total number of data bytes in the
      packet.  The encoding is as described for HIGH and LOW.  The number
-     of data bytes is the size of the `i' protocol packet wrapped inside
-     this `j' protocol packet.
+     of data bytes is the size of the ‘i’ protocol packet wrapped inside
+     this ‘j’ protocol packet.
 
-`@'
-     The ASCII character `@', octal 100.
+‘@’
+     The ASCII character ‘@’, octal 100.
 
-   The header is followed by the number of data bytes given in
-DATA-HIGH and DATA-LOW.  These data bytes are the `i' protocol packet
-which is being wrapped in the `j' protocol packet.  However, each
-character in the `i' protocol packet which the `j' protocol must avoid
-is transformed into a printable ASCII character (recall that avoiding a
-printable ASCII character is not permitted).  Two index bytes are used
-for each character which must be transformed.
+   The header is followed by the number of data bytes given in DATA-HIGH
+and DATA-LOW.  These data bytes are the ‘i’ protocol packet which is
+being wrapped in the ‘j’ protocol packet.  However, each character in
+the ‘i’ protocol packet which the ‘j’ protocol must avoid is transformed
+into a printable ASCII character (recall that avoiding a printable ASCII
+character is not permitted).  Two index bytes are used for each
+character which must be transformed.
 
    The index bytes immediately follow the data bytes.  The index bytes
 are created in pairs.  Each pair of index bytes encodes the location of
-a character in the `i' protocol packet which was transformed to become
-a printable ASCII character.  Each pair of index bytes also encodes the
+a character in the ‘i’ protocol packet which was transformed to become a
+printable ASCII character.  Each pair of index bytes also encodes the
 precise transformation which was performed.
 
    When the sender finds a character which must be avoided, it will
@@ -109,70 +109,70 @@ greater, it will subtract 0200.  If the resulting character is less than
 020, or is equal to 0177, it will xor by 020.  The result is a printable
 ASCII character.
 
-   The zero based byte index of the character within the `i' protocol
+   The zero based byte index of the character within the ‘i’ protocol
 packet is determined.  This index is turned into a two byte printable
 ASCII index, INDEX-HIGH and INDEX-LOW, such that the index is
-`(INDEX-HIGH - 040) * 040 + (INDEX-LOW - 040)'.  INDEX-LOW is
-restricted such that `040 <= INDEX-LOW < 0100'.  INDEX-HIGH is not
-permitted to be 0176, so `040 <= INDEX-HIGH < 0176'.  INDEX-LOW is then
-modified to encode the transformation:
+‘(INDEX-HIGH - 040) * 040 + (INDEX-LOW - 040)’.  INDEX-LOW is restricted
+such that ‘040 <= INDEX-LOW < 0100’.  INDEX-HIGH is not permitted to be
+0176, so ‘040 <= INDEX-HIGH < 0176’.  INDEX-LOW is then modified to
+encode the transformation:
 
-   * If the character transformation only had to subtract 0200, then
+   • If the character transformation only had to subtract 0200, then
      INDEX-LOW is used as is.
 
-   * If the character transformation only had to xor by 020, then 040
-     is added to INDEX-LOW.
+   • If the character transformation only had to xor by 020, then 040 is
+     added to INDEX-LOW.
 
-   * If both operations had to be performed, then 0100 is added to
+   • If both operations had to be performed, then 0100 is added to
      INDEX-LOW.  However, if the value of INDEX-LOW was initially 077,
      then adding 0100 would result in 0177, which is not a printable
-     ASCII character.  For that special case, INDEX-HIGH is set to
-     0176, and INDEX-LOW is set to the original value of INDEX-HIGH.
+     ASCII character.  For that special case, INDEX-HIGH is set to 0176,
+     and INDEX-LOW is set to the original value of INDEX-HIGH.
 
    The receiver decodes the index bytes as follows (this is the reverse
 of the operations performed by the sender, presented here for additional
 clarity):
 
-   * The first byte in the index is INDEX-HIGH, and the second is
+   • The first byte in the index is INDEX-HIGH, and the second is
      INDEX-LOW.
 
-   * If `040 <= INDEX-HIGH < 0176', the index refers to the data byte
-     at position `(INDEX-HIGH - 040) * 040 + INDEX-LOW % 040'.
+   • If ‘040 <= INDEX-HIGH < 0176’, the index refers to the data byte at
+     position ‘(INDEX-HIGH - 040) * 040 + INDEX-LOW % 040’.
 
-   * If `040 <= INDEX-LOW < 0100', then 0200 must be added to indexed
+   • If ‘040 <= INDEX-LOW < 0100’, then 0200 must be added to indexed
      byte.
 
-   * If `0100 <= INDEX-LOW < 0140', then 020 must be xor'ed to the
+   • If ‘0100 <= INDEX-LOW < 0140’, then 020 must be xor'ed to the
      indexed byte.
 
-   * If `0140 <= INDEX-LOW < 0177', then 0200 must be added to the
+   • If ‘0140 <= INDEX-LOW < 0177’, then 0200 must be added to the
      indexed byte, and 020 must be xor'ed to the indexed byte.
 
-   * If `INDEX-HIGH == 0176', the index refers to the data byte at
-     position `(INDEX-LOW - 040) * 040 + 037'.  0200 must be added to
+   • If ‘INDEX-HIGH == 0176’, the index refers to the data byte at
+     position ‘(INDEX-LOW - 040) * 040 + 037’.  0200 must be added to
      the indexed byte, and 020 must be xor'ed to the indexed byte.
 
-   This means the largest `i' protocol packet which may be wrapped
-inside a `j' protocol packet is `(0175 - 040) * 040 + (077 - 040) ==
-3007' bytes.
+   This means the largest ‘i’ protocol packet which may be wrapped
+inside a ‘j’ protocol packet is ‘(0175 - 040) * 040 + (077 - 040) ==
+3007’ bytes.
 
-   The final character in a `j' protocol packet, following the index
-bytes, is the ASCII character `~' (octal 176).
+   The final character in a ‘j’ protocol packet, following the index
+bytes, is the ASCII character ‘~’ (octal 176).
 
    The motivation behind using an indexing scheme, rather than escape
 characters, is to avoid data movement.  The sender may simply add a
-header and a trailer to the `i' protocol packet.  Once the receiver has
-loaded the `j' protocol packet, it may scan the index bytes,
+header and a trailer to the ‘i’ protocol packet.  Once the receiver has
+loaded the ‘j’ protocol packet, it may scan the index bytes,
 transforming the data bytes, and then pass the data bytes directly on to
-the `i' protocol routine.
+the ‘i’ protocol routine.
 
 
 File: uucp.info,  Node: x Protocol,  Next: y Protocol,  Prev: j Protocol,  Up: Protocols
 
-6.13 UUCP `x' Protocol
+6.13 UUCP ‘x’ Protocol
 ======================
 
-The `x' protocol is used in Europe (and probably elsewhere) with
+The ‘x’ protocol is used in Europe (and probably elsewhere) with
 machines that contain an builtin X.25 card and can send eight bit data
 transparently across X.25 circuits, without interference from the X.28
 or X.29 layers.  The protocol sends packets of 512 bytes, and relies on
@@ -183,17 +183,16 @@ implementation.
 
 File: uucp.info,  Node: y Protocol,  Next: d Protocol,  Prev: x Protocol,  Up: Protocols
 
-6.14 UUCP `y' Protocol
+6.14 UUCP ‘y’ Protocol
 ======================
 
-The `y' protocol was developed by Jorge Cwik for use in FX UUCICO, a PC
+The ‘y’ protocol was developed by Jorge Cwik for use in FX UUCICO, a PC
 uucico program.  It is designed for communication lines which handle
 error correction and flow control.  It requires an eight bit clean
-connection.  It performs error detection, but not error correction:
-when an error is detected, the line is dropped.  It is a streaming
-protocol, like the `f' protocol; there are no packet acknowledgements,
-so the protocol is efficient over a half-duplex communication line such
-as PEP.
+connection.  It performs error detection, but not error correction: when
+an error is detected, the line is dropped.  It is a streaming protocol,
+like the ‘f’ protocol; there are no packet acknowledgements, so the
+protocol is efficient over a half-duplex communication line such as PEP.
 
    Every packet contains a six byte header:
 
@@ -207,10 +206,10 @@ sequence high byte
 
 length low byte
 length high byte
-     A two byte data length, in little endian order.  If the high bit
-     of the sixteen bit field is clear, this is the number of data
-     bytes which follow the six byte header.  If the high bit is set,
-     there is no data, and the length field is a type of control packet.
+     A two byte data length, in little endian order.  If the high bit of
+     the sixteen bit field is clear, this is the number of data bytes
+     which follow the six byte header.  If the high bit is set, there is
+     no data, and the length field is a type of control packet.
 
 checksum low byte
 checksum high byte
@@ -218,10 +217,10 @@ checksum high byte
      computed over the data bytes.  The checksum algorithm is described
      below.  If there are no data bytes, the checksum is sent as 0.
 
-   When the protocol starts up, each side must send a sync packet.
-This is a packet with a normal six byte header followed by data.  The
-sequence number of the sync packet should be 0.  Currently at least
-four bytes of data must be sent with the sync packet.  Additional bytes
+   When the protocol starts up, each side must send a sync packet.  This
+is a packet with a normal six byte header followed by data.  The
+sequence number of the sync packet should be 0.  Currently at least four
+bytes of data must be sent with the sync packet.  Additional bytes
 should be ignored.  They are defined as follows:
 
 version
@@ -243,21 +242,21 @@ flags high byte
    A length field with the high bit set is a control packet.  The
 following control packet types are defined:
 
-0xfffe `YPKT_ACK'
+0xfffe ‘YPKT_ACK’
      Acknowledges correct receipt of a file.
 
-0xfffd `YPKT_ERR'
+0xfffd ‘YPKT_ERR’
      Indicates an incorrect checksum.
 
-0xfffc `YPKT_BAD'
+0xfffc ‘YPKT_BAD’
      Indicates a bad sequence number, an invalid length, or some other
      error.
 
-   If a control packet other than `YPKT_ACK' is received, the
-connection is dropped.  If a checksum error is detected for a received
-packet, a `YPKT_ERR' control packet is sent, and the connection is
-dropped.  If a packet is received out of sequence, a `YPKT_BAD' control
-packet is sent, and the connection is dropped.
+   If a control packet other than ‘YPKT_ACK’ is received, the connection
+is dropped.  If a checksum error is detected for a received packet, a
+‘YPKT_ERR’ control packet is sent, and the connection is dropped.  If a
+packet is received out of sequence, a ‘YPKT_BAD’ control packet is sent,
+and the connection is dropped.
 
    The checksum is initialized to 0xffff.  For each data byte in a
 packet it is modified as follows (where B is the byte before it has been
@@ -275,31 +274,31 @@ transformed as described above):
            /* Add the next byte into the checksum.  */
            ichk += B;
 
-   This is the same algorithm as that used by the `f' protocol.
+   This is the same algorithm as that used by the ‘f’ protocol.
 
    A command is sent as a sequence of data packets followed by a null
-byte.  In the normal case, a command will fit into a single packet.
-The packet should be exactly the length of the command plus a null
-byte.  If the command is too long, more packets are sent as required.
+byte.  In the normal case, a command will fit into a single packet.  The
+packet should be exactly the length of the command plus a null byte.  If
+the command is too long, more packets are sent as required.
 
    A file is sent as a sequence of data packets, ending with a zero
 length packet.  The data packets may be of any length greater than zero
-and less than or equal to the maximum permitted packet size specified
-in the initial sync packet.
+and less than or equal to the maximum permitted packet size specified in
+the initial sync packet.
 
    After the zero length packet ending a file transfer has been
-received, the receiving system sends a `YPKT_ACK' control packet.  The
-sending system waits for the `YPKT_ACK' control packet before
+received, the receiving system sends a ‘YPKT_ACK’ control packet.  The
+sending system waits for the ‘YPKT_ACK’ control packet before
 continuing; this wait should be done with a large timeout, since there
 may be a considerable amount of data buffered on the communication path.
 
 
 File: uucp.info,  Node: d Protocol,  Next: h Protocol,  Prev: y Protocol,  Up: Protocols
 
-6.15 UUCP `d' Protocol
+6.15 UUCP ‘d’ Protocol
 ======================
 
-The `d' protocol is apparently used for DataKit muxhost (not RS-232)
+The ‘d’ protocol is apparently used for DataKit muxhost (not RS-232)
 connections.  No file size is sent.  When a file has been completely
 transferred, a write of zero bytes is done; this must be read as zero
 bytes on the other end.
@@ -307,25 +306,25 @@ bytes on the other end.
 
 File: uucp.info,  Node: h Protocol,  Next: v Protocol,  Prev: d Protocol,  Up: Protocols
 
-6.16 UUCP `h' Protocol
+6.16 UUCP ‘h’ Protocol
 ======================
 
-The `h' protocol is apparently used in some places with HST modems.  It
-does no error checking, and is not that different from the `t'
-protocol.  I don't know the details.
+The ‘h’ protocol is apparently used in some places with HST modems.  It
+does no error checking, and is not that different from the ‘t’ protocol.
+I don't know the details.
 
 
 File: uucp.info,  Node: v Protocol,  Prev: h Protocol,  Up: Protocols
 
-6.17 UUCP `v' Protocol
+6.17 UUCP ‘v’ Protocol
 ======================
 
-The `v' protocol is used by UUPC/extended, a PC UUCP program.  It is
-simply a version of the `g' protocol which supports packets of any
-size, and also supports sending packets of different sizes during the
-same conversation.  There are many `g' protocol implementations which
-support both, but there are also many which do not.  Using `v' ensures
-that everything is supported.
+The ‘v’ protocol is used by UUPC/extended, a PC UUCP program.  It is
+simply a version of the ‘g’ protocol which supports packets of any size,
+and also supports sending packets of different sizes during the same
+conversation.  There are many ‘g’ protocol implementations which support
+both, but there are also many which do not.  Using ‘v’ ensures that
+everything is supported.
 
 
 File: uucp.info,  Node: Hacking,  Next: Acknowledgements,  Prev: Protocols,  Up: Top
@@ -349,20 +348,20 @@ File: uucp.info,  Node: System Dependence,  Next: Naming Conventions,  Prev: Hac
 =====================
 
 The code is carefully segregated into a system independent portion and a
-system dependent portion.  The system dependent code is in the `unix'
-subdirectory, and also in the file `sysh.unx' (also known as
-`sysdep.h').
+system dependent portion.  The system dependent code is in the ‘unix’
+subdirectory, and also in the file ‘sysh.unx’ (also known as
+‘sysdep.h’).
 
    With the right configuration parameters, the system independent code
 calls only ANSI C functions.  Some of the less common ANSI C functions
-are also provided in the `lib' directory.  The replacement function
-`strtol' in `lib/strtol.c' assumes that the characters `A' to `F' and
-`a' to `f' appear in strictly sequential order.  The function
-`igradecmp' in `uuconf/grdcmp.c' assumes that the upper and lower case
+are also provided in the ‘lib’ directory.  The replacement function
+‘strtol’ in ‘lib/strtol.c’ assumes that the characters ‘A’ to ‘F’ and
+‘a’ to ‘f’ appear in strictly sequential order.  The function
+‘igradecmp’ in ‘uuconf/grdcmp.c’ assumes that the upper and lower case
 letters appear in order.  Both assumptions are true for ASCII and
-EBCDIC, but neither is guaranteed by ANSI C.  Disregarding these
-caveats, I believe that the system independent portion of the code is
-strictly conforming.
+EBCDIC, but neither is guaranteed by ANSI C. Disregarding these caveats,
+I believe that the system independent portion of the code is strictly
+conforming.
 
    That's not too exciting, since all the work is done in the system
 dependent code.  I think that this code can conform to POSIX 1003.1,
@@ -388,59 +387,47 @@ time.
 return value).  Sometimes additional characters are used.  I use the
 following type prefixes:
 
-`a'
+‘a’
      array; the next character is the type of an element
-
-`b'
+‘b’
      byte or character
-
-`c'
+‘c’
      count of something
-
-`e'
+‘e’
      stdio FILE *
-
-`f'
+‘f’
      boolean
-
-`i'
+‘i’
      generic integer
-
-`l'
+‘l’
      double
-
-`o'
+‘o’
      file descriptor (as returned by open, creat, etc.)
-
-`p'
+‘p’
      generic pointer
-
-`q'
+‘q’
      pointer to structure
-
-`s'
+‘s’
      structure
-
-`u'
+‘u’
      void (function return values only)
-
-`z'
+‘z’
      character string
 
-   A generic pointer (`p') is sometimes a `void *', sometimes a
-function pointer in which case the prefix is pf, and sometimes a pointer
-to another type, in which case the next character is the type to which
-it points (pf is overloaded).
+   A generic pointer (‘p’) is sometimes a ‘void *’, sometimes a function
+pointer in which case the prefix is pf, and sometimes a pointer to
+another type, in which case the next character is the type to which it
+points (pf is overloaded).
 
-   An array of strings (`char *[]') would be named `az' (array of
+   An array of strings (‘char *[]’) would be named ‘az’ (array of
 string).  If this array were passed to a function, the function
-parameter would be named `paz' (pointer to array of string).
+parameter would be named ‘paz’ (pointer to array of string).
 
    Note that the variable name prefixes do not necessarily indicate the
-type of the variable.  For example, a variable prefixed with `i' may be
-int, long or short.  Similarly, a variable prefixed with `b' may be a
-char or an int; for example, the return value of `getchar' would be
-caught in an int variable prefixed with `b'.
+type of the variable.  For example, a variable prefixed with ‘i’ may be
+int, long or short.  Similarly, a variable prefixed with ‘b’ may be a
+char or an int; for example, the return value of ‘getchar’ would be
+caught in an int variable prefixed with ‘b’.
 
    For a non-local variable (extern or file static), the first character
 after the type prefix is capitalized.
@@ -448,9 +435,9 @@ after the type prefix is capitalized.
    Most static variables and functions use another letter after the type
 prefix to indicate which module they come from.  This is to help
 distinguish different names in the debugger.  For example, all static
-functions in `protg.c', the `g' protocol source code, use a module
-prefix of `g'.  This isn't too useful, as a number of modules use a
-module prefix of `s'.
+functions in ‘protg.c’, the ‘g’ protocol source code, use a module
+prefix of ‘g’.  This isn't too useful, as a number of modules use a
+module prefix of ‘s’.
 
 
 File: uucp.info,  Node: Patches,  Prev: Naming Conventions,  Up: Hacking
@@ -462,16 +449,16 @@ I am always grateful for any patches sent in.  Much of the flexibility
 and portability of the code is due to other people.  Please do not
 hesitate to send me any changes you have found necessary or useful.
 
-   When sending a patch, please send the output of the Unix `diff'
-program invoked with the `-c' option (if you have the GNU version of
-`diff', use the `-p' option).  Always invoke `diff' with the original
+   When sending a patch, please send the output of the Unix ‘diff’
+program invoked with the ‘-c’ option (if you have the GNU version of
+‘diff’, use the ‘-p’ option).  Always invoke ‘diff’ with the original
 file first and the modified file second.
 
-   If your `diff' does not support `-c' (or you don't have `diff'),
-send a complete copy of the modified file (if you have just changed a
-single function, you can just send the new version of the function).
-In particular, please do not send `diff' output without the `-c'
-option, as it is useless.
+   If your ‘diff’ does not support ‘-c’ (or you don't have ‘diff’), send
+a complete copy of the modified file (if you have just changed a single
+function, you can just send the new version of the function).  In
+particular, please do not send ‘diff’ output without the ‘-c’ option, as
+it is useless.
 
    If you have made a number of changes, it is very convenient for me if
 you send each change as a separate mail message.  Sometimes I will think
@@ -510,7 +497,7 @@ unappreciated.
 
    First of all, I would like to thank the people at Infinity
 Development Systems (formerly AIRS, which lives on in the domain name)
-for permitting me to use their computers and `uunet' access.  I would
+for permitting me to use their computers and ‘uunet’ access.  I would
 also like to thank Richard Stallman <rms@gnu.org> for founding the Free
 Software Foundation, and John Gilmore <gnu@toad.com> for writing the
 initial version of gnuucp (based on uuslave) which was a direct
@@ -518,12 +505,12 @@ inspiration for this somewhat larger project.  Chip Salzenberg
 <chip@tct.com> has contributed many patches.  Franc,ois Pinard
 <pinard@iro.umontreal.ca> tirelessly tested the code and suggested many
 improvements.  He also put together the initial version of this manual.
-Doug Evans contributed the zmodem protocol.  Marc Boucher
-<marc@CAM.ORG> contributed the code supporting the pipe port type.
-Jorge Cwik <jorge@laser.satlink.net> contributed the `y' protocol code.
-Finally, Verbus M. Counts <verbus@westmark.com> and Centel Federal
-Systems, Inc., deserve special thanks, since they actually paid me
-money to port this code to System III.
+Doug Evans contributed the zmodem protocol.  Marc Boucher <marc@CAM.ORG>
+contributed the code supporting the pipe port type.  Jorge Cwik
+<jorge@laser.satlink.net> contributed the ‘y’ protocol code.  Finally,
+Verbus M. Counts <verbus@westmark.com> and Centel Federal Systems, Inc.,
+deserve special thanks, since they actually paid me money to port this
+code to System III.
 
    In alphabetical order:
 
@@ -820,23 +807,23 @@ Concept Index
 * .Xqtdir:                               Execution Subdirectories.
                                                                (line  7)
 * /usr/spool/uucp:                       Miscellaneous (config).
-                                                               (line 14)
+                                                               (line 15)
 * /usr/spool/uucppublic:                 Miscellaneous (config).
-                                                               (line 20)
+                                                               (line 22)
 * accepting calls:                       Accepting Calls.      (line  6)
 * anonymous UUCP:                        config File Examples. (line 41)
 * call configuration file:               Configuration File Names.
-                                                               (line 47)
+                                                               (line 51)
 * call in login name:                    Configuration File Names.
-                                                               (line 64)
+                                                               (line 69)
 * call in password:                      Configuration File Names.
-                                                               (line 64)
+                                                               (line 69)
 * call out file:                         Configuration File Names.
-                                                               (line 47)
+                                                               (line 51)
 * call out login name:                   Configuration File Names.
-                                                               (line 47)
+                                                               (line 51)
 * call out password:                     Configuration File Names.
-                                                               (line 47)
+                                                               (line 51)
 * calling in:                            Accepting Calls.      (line  6)
 * calling out:                           Calling Other Systems.
                                                                (line  6)
@@ -847,22 +834,22 @@ Concept Index
 * config file:                           config File.          (line  6)
 * config file examples:                  config File Examples. (line  6)
 * configuration file (call):             Configuration File Names.
-                                                               (line 47)
+                                                               (line 51)
 * configuration file (config):           config File.          (line  6)
 * configuration file (dial):             dial File.            (line  6)
 * configuration file (dialcode):         Configuration File Names.
-                                                               (line 30)
+                                                               (line 33)
 * configuration file (passwd):           Configuration File Names.
-                                                               (line 64)
+                                                               (line 69)
 * configuration file (port):             port File.            (line  6)
 * configuration file (sys):              sys File.             (line  6)
 * d protocol:                            d Protocol.           (line  6)
-* debugging file:                        Log File Names.       (line 19)
+* debugging file:                        Log File Names.       (line 21)
 * dial file:                             dial File.            (line  6)
 * dialcode configuration file:           Configuration File Names.
-                                                               (line 30)
+                                                               (line 33)
 * dialcode file:                         Configuration File Names.
-                                                               (line 30)
+                                                               (line 33)
 * dialer configuration file:             dial File.            (line  6)
 * e protocol:                            e Protocol.           (line  6)
 * E UUCP protocol command:               The E Command.        (line  6)
@@ -870,10 +857,10 @@ Concept Index
                                                                (line  6)
 * f protocol:                            f Protocol.           (line  6)
 * final handshake:                       The Final Handshake.  (line  6)
-* G protocol:                            Big G Protocol.       (line  6)
 * g protocol:                            g Protocol.           (line  6)
+* G protocol:                            Big G Protocol.       (line  6)
 * gateway:                               Gateway Example.      (line  6)
-* grades:                                When to Call.         (line 25)
+* grades:                                When to Call.         (line 26)
 * grades implementation:                 UUCP Grades.          (line  6)
 * h protocol:                            h Protocol.           (line  6)
 * H UUCP protocol command:               The H Command.        (line  6)
@@ -886,7 +873,7 @@ Concept Index
 * LCK.XQT.NN:                            Spool Lock Files.     (line 28)
 * leaf site:                             Leaf Example.         (line  6)
 * lock directory:                        Miscellaneous (config).
-                                                               (line 27)
+                                                               (line 30)
 * lock files:                            UUCP Lock Files.      (line  6)
 * lock files in spool directory:         Spool Lock Files.     (line  6)
 * log file:                              Log File Names.       (line  7)
@@ -895,18 +882,18 @@ Concept Index
 * main configuration file:               config File.          (line  6)
 * news:                                  Mail and News.        (line  6)
 * parity in login names:                 Miscellaneous (config).
-                                                               (line 43)
+                                                               (line 48)
 * passwd configuration file:             Configuration File Names.
-                                                               (line 64)
+                                                               (line 69)
 * passwd file:                           Configuration File Names.
-                                                               (line 64)
+                                                               (line 69)
 * port configuration file:               port File.            (line  6)
 * port file:                             port File.            (line  6)
 * protocol d:                            d Protocol.           (line  6)
 * protocol e:                            e Protocol.           (line  6)
 * protocol f:                            f Protocol.           (line  6)
-* protocol G:                            Big G Protocol.       (line  6)
 * protocol g:                            g Protocol.           (line  6)
+* protocol G:                            Big G Protocol.       (line  6)
 * protocol h:                            h Protocol.           (line  6)
 * protocol i:                            i Protocol.           (line  6)
 * protocol j:                            j Protocol.           (line  6)
@@ -916,7 +903,7 @@ Concept Index
 * protocol y:                            y Protocol.           (line  6)
 * protocol, UUCP:                        UUCP Protocol.        (line  6)
 * public directory:                      Miscellaneous (config).
-                                                               (line 20)
+                                                               (line 22)
 * R UUCP protocol command:               The R Command.        (line  6)
 * S UUCP protocol command:               The S Command.        (line  6)
 * spool directory:                       The Spool Directory Layout.
@@ -925,8 +912,8 @@ Concept Index
 * spool directory, cleaning:             Spool Directory Cleaning.
                                                                (line  6)
 * spool directory, setting:              Miscellaneous (config).
-                                                               (line 14)
-* statistics file:                       Log File Names.       (line 14)
+                                                               (line 15)
+* statistics file:                       Log File Names.       (line 15)
 * status files:                          Status Directory.     (line  7)
 * sys file:                              sys File.             (line  6)
 * sys file example (gateway):            Gateway Example.      (line  6)
@@ -940,7 +927,7 @@ Concept Index
 * t protocol:                            t Protocol.           (line  6)
 * time strings:                          Time Strings.         (line  6)
 * unknown systems:                       Miscellaneous (config).
-                                                               (line 36)
+                                                               (line 40)
 * UUCP protocol:                         UUCP Protocol.        (line  6)
 * UUCP protocol E command:               The E Command.        (line  6)
 * UUCP protocol H command:               The H Command.        (line  6)
@@ -950,7 +937,7 @@ Concept Index
 * UUCP system name:                      Miscellaneous (config).
                                                                (line  9)
 * uucppublic:                            Miscellaneous (config).
-                                                               (line 20)
+                                                               (line 22)
 * v protocol:                            v Protocol.           (line  6)
 * x protocol:                            x Protocol.           (line  6)
 * X UUCP protocol command:               The X Command.        (line  6)
@@ -967,179 +954,178 @@ Configuration File Index
  [index ]
 * Menu:
 
-* abort:                                 dial File.           (line 137)
-* abort-chat:                            dial File.           (line 123)
-* abort-chat-fail:                       dial File.           (line 127)
-* abort-chat-program:                    dial File.           (line 131)
-* abort-chat-seven-bit:                  dial File.           (line 129)
-* abort-chat-timeout:                    dial File.           (line 125)
-* address:                               Placing the Call.    (line  46)
-* alias:                                 Naming the System.   (line  24)
-* alternate:                             Naming the System.   (line  11)
-* baud in port file:                     port File.           (line  86)
-* baud in sys file:                      Placing the Call.    (line   9)
-* baud-range:                            port File.           (line  94)
+* abort:                                 dial File.           (line 132)
+* abort-chat:                            dial File.           (line 121)
+* abort-chat-fail:                       dial File.           (line 123)
+* abort-chat-program:                    dial File.           (line 125)
+* abort-chat-seven-bit:                  dial File.           (line 124)
+* abort-chat-timeout:                    dial File.           (line 122)
+* address:                               Placing the Call.    (line  47)
+* alias:                                 Naming the System.   (line  27)
+* alternate:                             Naming the System.   (line  12)
+* baud in port file:                     port File.           (line  88)
+* baud in sys file:                      Placing the Call.    (line   8)
+* baud-range:                            port File.           (line  96)
 * call-local-size:                       File Transfer Control.
-                                                              (line  33)
-* call-login:                            Logging In.          (line  67)
-* call-password:                         Logging In.          (line  75)
+                                                              (line  39)
+* call-login:                            Logging In.          (line  62)
+* call-password:                         Logging In.          (line  71)
 * call-remote-size:                      File Transfer Control.
-                                                              (line  48)
-* call-timegrade:                        When to Call.        (line  70)
-* call-transfer:                         File Transfer Control.
-                                                              (line  19)
-* callback:                              Accepting a Call.    (line  34)
-* called-chat:                           Accepting a Call.    (line  39)
-* called-chat-fail:                      Accepting a Call.    (line  43)
-* called-chat-program:                   Accepting a Call.    (line  47)
-* called-chat-seven-bit:                 Accepting a Call.    (line  45)
-* called-chat-timeout:                   Accepting a Call.    (line  41)
-* called-local-size:                     File Transfer Control.
                                                               (line  55)
+* call-timegrade:                        When to Call.        (line  74)
+* call-transfer:                         File Transfer Control.
+                                                              (line  22)
+* callback:                              Accepting a Call.    (line  35)
+* called-chat:                           Accepting a Call.    (line  41)
+* called-chat-fail:                      Accepting a Call.    (line  43)
+* called-chat-program:                   Accepting a Call.    (line  45)
+* called-chat-seven-bit:                 Accepting a Call.    (line  44)
+* called-chat-timeout:                   Accepting a Call.    (line  42)
+* called-local-size:                     File Transfer Control.
+                                                              (line  63)
 * called-login:                          Accepting a Call.    (line   7)
 * called-remote-size:                    File Transfer Control.
-                                                              (line  62)
-* called-timegrade:                      When to Call.        (line  89)
+                                                              (line  71)
+* called-timegrade:                      When to Call.        (line  94)
 * called-transfer:                       File Transfer Control.
-                                                              (line  24)
+                                                              (line  28)
 * callfile:                              Configuration File Names.
-                                                              (line  47)
-* carrier in dial file:                  dial File.           (line  85)
-* carrier in port file:                  port File.           (line 107)
-* carrier-wait:                          dial File.           (line  92)
+                                                              (line  51)
+* carrier in dial file:                  dial File.           (line  82)
+* carrier in port file:                  port File.           (line 110)
+* carrier-wait:                          dial File.           (line  90)
 * chat:                                  Chat Scripts.        (line  21)
-* chat in dial file:                     dial File.           (line  20)
+* chat in dial file:                     dial File.           (line  21)
 * chat in sys file:                      Logging In.          (line   7)
-* chat-fail:                             Chat Scripts.        (line 144)
-* chat-fail in dial file:                dial File.           (line  24)
-* chat-fail in sys file:                 Logging In.          (line  11)
-* chat-program:                          Chat Scripts.        (line 172)
-* chat-program in dial file:             dial File.           (line  28)
-* chat-program in sys file:              Logging In.          (line  15)
-* chat-seven-bit:                        Chat Scripts.        (line 163)
-* chat-seven-bit in dial file:           dial File.           (line  26)
-* chat-seven-bit in sys file:            Logging In.          (line  13)
-* chat-timeout:                          Chat Scripts.        (line 138)
+* chat-fail:                             Chat Scripts.        (line 128)
+* chat-fail in dial file:                dial File.           (line  23)
+* chat-fail in sys file:                 Logging In.          (line   9)
+* chat-program:                          Chat Scripts.        (line 158)
+* chat-program in dial file:             dial File.           (line  25)
+* chat-program in sys file:              Logging In.          (line  11)
+* chat-seven-bit:                        Chat Scripts.        (line 148)
+* chat-seven-bit in dial file:           dial File.           (line  24)
+* chat-seven-bit in sys file:            Logging In.          (line  10)
+* chat-timeout:                          Chat Scripts.        (line 121)
 * chat-timeout in dial file:             dial File.           (line  22)
-* chat-timeout in sys file:              Logging In.          (line   9)
-* command:                               port File.           (line 235)
-* command-path:                          Miscellaneous (sys). (line  13)
-* commands:                              Miscellaneous (sys). (line  19)
-* complete:                              dial File.           (line 118)
+* chat-timeout in sys file:              Logging In.          (line   8)
+* command:                               port File.           (line 250)
+* command-path:                          Miscellaneous (sys). (line  14)
+* commands:                              Miscellaneous (sys). (line  21)
+* complete:                              dial File.           (line 115)
 * complete-chat:                         dial File.           (line 104)
-* complete-chat-fail:                    dial File.           (line 108)
-* complete-chat-program:                 dial File.           (line 112)
-* complete-chat-seven-bit:               dial File.           (line 110)
-* complete-chat-timeout:                 dial File.           (line 106)
+* complete-chat-fail:                    dial File.           (line 106)
+* complete-chat-program:                 dial File.           (line 108)
+* complete-chat-seven-bit:               dial File.           (line 107)
+* complete-chat-timeout:                 dial File.           (line 105)
 * debug in config file:                  Debugging Levels.    (line   7)
-* debug in sys file:                     Miscellaneous (sys). (line  45)
-* debugfile:                             Log File Names.      (line  19)
-* default-alternates:                    Naming the System.   (line  19)
-* device:                                port File.           (line  78)
-* dial-device:                           port File.           (line 124)
+* debug in sys file:                     Miscellaneous (sys). (line  50)
+* debugfile:                             Log File Names.      (line  21)
+* default-alternates:                    Naming the System.   (line  21)
+* device:                                port File.           (line  80)
+* dial-device:                           port File.           (line 129)
 * dialcodefile:                          Configuration File Names.
-                                                              (line  30)
+                                                              (line  33)
 * dialer in dial file:                   dial File.           (line  17)
-* dialer in port file:                   port File.           (line 129)
-* dialer-sequence:                       port File.           (line 144)
+* dialer in port file:                   port File.           (line 135)
+* dialer-sequence:                       port File.           (line 152)
 * dialfile:                              Configuration File Names.
-                                                              (line  23)
-* dialtone:                              dial File.           (line  74)
-* dtr-toggle:                            dial File.           (line  97)
+                                                              (line  25)
+* dialtone:                              dial File.           (line  70)
+* dtr-toggle:                            dial File.           (line  96)
 * forward:                               File Transfer Control.
-                                                              (line 127)
+                                                              (line 143)
 * forward-from:                          File Transfer Control.
-                                                              (line 118)
+                                                              (line 133)
 * forward-to:                            File Transfer Control.
-                                                              (line 109)
-* free-space:                            Miscellaneous (sys). (line  25)
-* half-duplex in dial file:              dial File.           (line 160)
-* half-duplex in port file:              port File.           (line  73)
-* hardflow:                              port File.           (line 118)
+                                                              (line 123)
+* free-space:                            Miscellaneous (sys). (line  28)
+* half-duplex in dial file:              dial File.           (line 159)
+* half-duplex in port file:              port File.           (line  74)
+* hardflow:                              port File.           (line 122)
 * hdb-files:                             Miscellaneous (config).
-                                                              (line 115)
+                                                              (line 124)
 * hostname:                              Miscellaneous (config).
                                                               (line   8)
 * local-receive:                         File Transfer Control.
-                                                              (line  98)
+                                                              (line 110)
 * local-send:                            File Transfer Control.
-                                                              (line  69)
+                                                              (line  79)
 * lockdir:                               Miscellaneous (config).
-                                                              (line  27)
-* lockname:                              port File.           (line 183)
+                                                              (line  30)
+* lockname:                              port File.           (line 192)
 * logfile:                               Log File Names.      (line   7)
 * max-file-time:                         File Transfer Control.
-                                                              (line 132)
-* max-remote-debug:                      Miscellaneous (sys). (line  55)
-* max-retries:                           When to Call.        (line  58)
+                                                              (line 149)
+* max-remote-debug:                      Miscellaneous (sys). (line  61)
+* max-retries:                           When to Call.        (line  60)
 * max-uuxqts:                            Miscellaneous (config).
-                                                              (line  61)
-* myname:                                Naming the System.   (line  30)
+                                                              (line  67)
+* myname:                                Naming the System.   (line  34)
 * nodename:                              Miscellaneous (config).
                                                               (line   7)
 * passwdfile:                            Configuration File Names.
-                                                              (line  64)
-* pause:                                 dial File.           (line  80)
-* phone:                                 Placing the Call.    (line  45)
+                                                              (line  69)
+* pause:                                 dial File.           (line  76)
+* phone:                                 Placing the Call.    (line  46)
 * port in port file:                     port File.           (line  23)
 * port in sys file:                      Placing the Call.    (line  24)
 * portfile:                              Configuration File Names.
-                                                              (line  15)
-* protocol in port file:                 port File.           (line  51)
+                                                              (line  16)
+* protocol in port file:                 port File.           (line  48)
 * protocol in sys file:                  Protocol Selection.  (line   7)
-* protocol-parameter in dial file:       dial File.           (line 142)
-* protocol-parameter in port file:       port File.           (line  57)
+* protocol-parameter in dial file:       dial File.           (line 138)
+* protocol-parameter in port file:       port File.           (line  55)
 * protocol-parameter in sys file:        Protocol Selection.  (line  90)
 * pubdir in config file:                 Miscellaneous (config).
-                                                              (line  20)
-* pubdir in sys file:                    Miscellaneous (sys). (line  37)
-* push:                                  port File.           (line 208)
+                                                              (line  22)
+* pubdir in sys file:                    Miscellaneous (sys). (line  41)
+* push:                                  port File.           (line 220)
 * receive-request:                       File Transfer Control.
-                                                              (line  11)
-* reliable in dial file:                 dial File.           (line 155)
+                                                              (line  12)
+* reliable in dial file:                 dial File.           (line 153)
 * reliable in port file:                 port File.           (line  67)
 * remote-receive:                        File Transfer Control.
-                                                              (line 102)
+                                                              (line 115)
 * remote-send:                           File Transfer Control.
-                                                              (line  93)
+                                                              (line 104)
 * request:                               File Transfer Control.
-                                                              (line  15)
+                                                              (line  17)
 * run-uuxqt:                             Miscellaneous (config).
-                                                              (line  72)
+                                                              (line  79)
 * send-request:                          File Transfer Control.
                                                               (line   7)
 * sequence:                              Miscellaneous (sys). (line   7)
-* server-address:                        port File.           (line 215)
-* service:                               port File.           (line 193)
-* seven-bit in dial file:                dial File.           (line 148)
-* seven-bit in port file:                port File.           (line  61)
-* speed in port file:                    port File.           (line  84)
+* server-address:                        port File.           (line 229)
+* service:                               port File.           (line 203)
+* seven-bit in dial file:                dial File.           (line 145)
+* seven-bit in port file:                port File.           (line  60)
+* speed in port file:                    port File.           (line  87)
 * speed in sys file:                     Placing the Call.    (line   7)
-* speed-range:                           port File.           (line  92)
+* speed-range:                           port File.           (line  95)
 * spool:                                 Miscellaneous (config).
-                                                              (line  14)
-* statfile:                              Log File Names.      (line  14)
-* stream:                                port File.           (line 211)
+                                                              (line  15)
+* statfile:                              Log File Names.      (line  15)
+* stream:                                port File.           (line 224)
 * strip-login:                           Miscellaneous (config).
-                                                              (line  43)
+                                                              (line  48)
 * strip-proto:                           Miscellaneous (config).
-                                                              (line  53)
+                                                              (line  58)
 * sysfile:                               Configuration File Names.
                                                               (line   7)
 * system:                                Naming the System.   (line   7)
 * time:                                  When to Call.        (line   7)
-* timegrade:                             When to Call.        (line  25)
+* timegrade:                             When to Call.        (line  26)
 * timetable:                             Miscellaneous (config).
-                                                              (line  91)
+                                                              (line  99)
 * transfer:                              File Transfer Control.
-                                                              (line  29)
-* type:                                  port File.           (line  26)
+                                                              (line  34)
+* type:                                  port File.           (line  27)
 * unknown:                               Miscellaneous (config).
-                                                              (line  36)
+                                                              (line  40)
 * uuname:                                Miscellaneous (config).
                                                               (line   9)
 * v2-files:                              Miscellaneous (config).
-                                                              (line 109)
-* version:                               port File.           (line 200)
-
+                                                              (line 118)
+* version:                               port File.           (line 211)
 

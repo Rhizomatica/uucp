@@ -1,4 +1,4 @@
-This is uucp.info, produced by makeinfo version 4.11 from uucp.texi.
+This is uucp.info, produced by makeinfo version 7.1.1 from uucp.texi.
 
 INFO-DIR-SECTION Networking tools
 
@@ -8,7 +8,7 @@ END-INFO-DIR-ENTRY
 
    This file documents Taylor UUCP, version 1.07.
 
-   Copyright (C) 1992, 1993, 1994, 1995, 2002 Ian Lance Taylor
+   Copyright © 1992, 1993, 1994, 1995, 2002 Ian Lance Taylor
 
    Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -29,125 +29,130 @@ a translation approved by the author instead of in the original English.
 
 Indirect:
 uucp.info-1: 1132
-uucp.info-2: 295451
+uucp.info-2: 307184
 
 Tag Table:
 (Indirect)
 Node: Top1132
-Node: Copying8554
-Node: Introduction10799
-Node: Invoking the UUCP Programs19753
-Node: Standard Options20674
-Node: Invoking uucp22092
-Node: uucp Description22369
-Node: uucp Options24403
-Node: Invoking uux27022
-Node: uux Description27348
-Node: uux Options30403
-Node: uux Examples33151
-Node: Invoking uustat34075
-Node: uustat Description34418
-Node: uustat Options36192
-Node: uustat Examples42780
-Node: Invoking uuname45557
-Node: Invoking uulog46524
-Node: Invoking uuto48741
-Node: Invoking uupick49703
-Node: Invoking cu51017
-Node: cu Description51401
-Node: cu Commands52799
-Node: cu Variables55192
-Node: cu Options57356
-Node: Invoking uucico58735
-Node: uucico Description59021
-Node: uucico Options61677
-Node: Invoking uuxqt65140
-Node: Invoking uuchk66328
-Node: Invoking uuconv66924
-Node: Invoking uusched68782
-Node: Installing Taylor UUCP69228
-Node: Compilation69759
-Node: Testing the Compilation76717
-Node: Installing the Binaries80681
-Node: Configuration81708
-Node: Testing the Installation83887
-Node: Using Taylor UUCP87024
-Node: Calling Other Systems87477
-Node: Accepting Calls90006
-Node: Mail and News91973
-Node: Sending mail or news93071
-Node: Receiving mail or news94529
-Node: The Spool Directory Layout95301
-Node: System Spool Directories96221
-Node: Status Directory98183
-Node: Execution Subdirectories100535
-Node: Other Spool Subdirectories101826
-Node: Spool Lock Files104816
-Node: Spool Directory Cleaning107374
-Node: Configuration Files108571
-Node: Configuration Overview110155
-Node: Configuration File Format112312
-Node: Configuration Examples113990
-Node: config File Examples114564
-Node: Leaf Example118452
-Node: Gateway Example121113
-Node: Time Strings125352
-Node: Chat Scripts127174
-Node: config File136369
-Node: Miscellaneous (config)137438
-Node: Configuration File Names143273
-Node: Log File Names148223
-Node: Debugging Levels149473
-Node: sys File152352
-Node: Defaults and Alternates153237
-Node: Naming the System156338
-Node: Calling Out158192
-Node: When to Call158558
-Node: Placing the Call164185
-Node: Logging In167724
-Node: Accepting a Call171352
-Node: Protocol Selection174177
-Node: File Transfer Control187934
-Node: Miscellaneous (sys)194239
-Node: Default sys File Values197380
-Node: port File198011
-Node: dial File209779
-Node: UUCP Over TCP215806
-Node: TCP Client216317
-Node: TCP Server218099
-Node: Security219564
-Node: Protocols224614
-Node: UUCP Protocol Sources226235
-Node: UUCP Grades228488
-Node: UUCP Lock Files232786
-Node: Execution File Format236188
-Node: UUCP Protocol241557
-Node: The Initial Handshake242062
-Node: UUCP Protocol Commands250464
-Node: The S Command252495
-Node: The R Command259558
-Node: The X Command263668
-Node: The E Command265602
-Node: The H Command268731
-Node: The Final Handshake269580
-Node: g Protocol270251
-Node: f Protocol280645
-Node: t Protocol283723
-Node: e Protocol284782
-Node: Big G Protocol285575
-Node: i Protocol286430
-Node: j Protocol295451
-Node: x Protocol301725
-Node: y Protocol302288
-Node: d Protocol306841
-Node: h Protocol307213
-Node: v Protocol307525
-Node: Hacking308023
-Node: System Dependence308392
-Node: Naming Conventions309785
-Node: Patches311965
-Node: Acknowledgements313920
-Node: Index (concepts)327305
-Node: Index (configuration file)338389
+Node: Copying8556
+Node: Introduction10808
+Node: Invoking the UUCP Programs20223
+Node: Standard Options21144
+Node: Invoking uucp22675
+Node: uucp Description22952
+Node: uucp Options25086
+Node: Invoking uux27910
+Node: uux Description28236
+Node: uux Options31379
+Node: uux Examples34347
+Node: Invoking uustat35327
+Node: uustat Description35670
+Node: uustat Options37552
+Node: uustat Examples44627
+Node: Invoking uuname47507
+Node: Invoking uulog48538
+Node: Invoking uuto50949
+Node: Invoking uupick51939
+Node: Invoking cu53321
+Node: cu Description53705
+Node: cu Commands55163
+Node: cu Variables57680
+Node: cu Options59983
+Node: Invoking uucico61522
+Node: uucico Description61808
+Node: uucico Options64684
+Node: Invoking uuxqt68417
+Node: Invoking uuchk69701
+Node: Invoking uuconv70313
+Node: Invoking uusched72270
+Node: Installing Taylor UUCP72736
+Node: Compilation73267
+Node: Testing the Compilation80622
+Node: Installing the Binaries84865
+Node: Configuration85912
+Node: Testing the Installation88148
+Node: Using Taylor UUCP91433
+Node: Calling Other Systems91886
+Node: Accepting Calls94499
+Node: Mail and News96514
+Node: Sending mail or news97636
+Node: Receiving mail or news99158
+Node: The Spool Directory Layout99954
+Node: System Spool Directories100882
+Node: Status Directory102905
+Node: Execution Subdirectories105331
+Node: Other Spool Subdirectories106690
+Node: Spool Lock Files109772
+Node: Spool Directory Cleaning112441
+Node: Configuration Files113686
+Node: Configuration Overview115306
+Node: Configuration File Format117511
+Node: Configuration Examples119277
+Node: config File Examples119855
+Node: Leaf Example123863
+Node: Gateway Example126623
+Node: Time Strings130970
+Node: Chat Scripts132866
+Node: config File142367
+Node: Miscellaneous (config)143488
+Node: Configuration File Names149577
+Node: Log File Names154655
+Node: Debugging Levels155947
+Node: sys File158930
+Node: Defaults and Alternates159823
+Node: Naming the System162991
+Node: Calling Out164898
+Node: When to Call165264
+Node: Placing the Call171106
+Node: Logging In174730
+Node: Accepting a Call178527
+Node: Protocol Selection181426
+Node: File Transfer Control195556
+Node: Miscellaneous (sys)202045
+Node: Default sys File Values205276
+Node: port File205905
+Node: dial File218055
+Node: UUCP Over TCP224291
+Node: TCP Client224801
+Node: TCP Server226650
+Node: Security228190
+Node: Protocols233321
+Node: UUCP Protocol Sources234961
+Node: UUCP Grades237260
+Node: UUCP Lock Files241742
+Node: Execution File Format245222
+Node: UUCP Protocol250779
+Node: The Initial Handshake251284
+Node: UUCP Protocol Commands259936
+Node: The S Command262048
+Node: The R Command269281
+Node: The X Command273503
+Node: The E Command275492
+Node: The H Command278759
+Node: The Final Handshake279633
+Node: g Protocol280324
+Node: f Protocol290899
+Node: t Protocol294035
+Node: e Protocol295113
+Node: Big G Protocol295927
+Node: i Protocol296809
+Node: j Protocol307184
+Node: x Protocol313688
+Node: y Protocol314259
+Node: d Protocol318862
+Node: h Protocol319242
+Node: v Protocol319565
+Node: Hacking320083
+Node: System Dependence320452
+Node: Naming Conventions321892
+Node: Patches324164
+Node: Acknowledgements326160
+Node: Index (concepts)339555
+Node: Index (configuration file)350639
 
 End Tag Table
+
+
+Local Variables:
+coding: utf-8
+End:
