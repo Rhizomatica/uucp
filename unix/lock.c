@@ -99,13 +99,13 @@ fsdo_lock (zlock, fspooldir, pferr)
   int o;
 #if HAVE_QNX_LOCKFILES
   nid_t inme;
-  char ab[23];
+  char ab[128];
   char *zend;
 #else
 #if HAVE_V2_LOCKFILES
   int i;
 #else
-  char ab[12];
+  char ab[128];
 #endif
 #endif
   int cwrote;
@@ -221,7 +221,8 @@ fsdo_lock (zlock, fspooldir, pferr)
       pid_t ipid;
       boolean freadonly;
       struct stat st;
-      char abtime[sizeof "1991-12-31 12:00:00"];
+      //XXX char abtime[sizeof "1991-12-31 12:00:00"];
+      char abtime[128];
 #if HAVE_QNX_LOCKFILES
       nid_t inid;
 #endif
@@ -277,7 +278,7 @@ fsdo_lock (zlock, fspooldir, pferr)
 #if DEBUG > 0
 #if HAVE_V2_LOCKFILES
       {
-	char ab[10];
+	char ab[128];
 
 	if (read (o, ab, sizeof ab) > 4
 	    && isdigit (BUCHAR (ab[0])))

@@ -37,6 +37,10 @@ const char pipe_rcsid[] = "$Id: pipe.c,v 1.10 2002/03/05 19:10:42 ian Rel $";
 
 #include <errno.h>
 
+/* needed for waitpid (XXX might be done with #if) */
+#include <sys/types.h>
+#include <sys/wait.h>
+
 #if HAVE_FCNTL_H
 #include <fcntl.h>
 #else
@@ -232,14 +236,16 @@ fspipe_dial (qconn, puuconf, qsys, zphone, qdialer, ptdialer)
 {
   struct ssysdep_conn *q;
   int aidescs[3];
-  const char **pzprog;
+  //XXX const char **pzprog;
+  char **pzprog;
   char **p;
 
   q = (struct ssysdep_conn *) qconn->psysdep;
 
   *ptdialer = DIALERFOUND_FALSE;
 
-  pzprog = (const char **) qconn->qport->uuconf_u.uuconf_spipe.uuconf_pzcmd;
+  //XXX pzprog = (const char **) qconn->qport->uuconf_u.uuconf_spipe.uuconf_pzcmd;
+  pzprog = qconn->qport->uuconf_u.uuconf_spipe.uuconf_pzcmd;
 
   if (pzprog == NULL)
     {
@@ -263,7 +269,7 @@ fspipe_dial (qconn, puuconf, qsys, zphone, qdialer, ptdialer)
 
   /* Pass fkeepuid, fkeepenv and fshell as TRUE.  This puts the
      responsibility of security on the connection program.  */
-  q->ipid = ixsspawn (pzprog, aidescs, TRUE, TRUE, (const char *) NULL,
+  q->ipid = ixsspawn ((const char **)pzprog, aidescs, TRUE, TRUE, (const char *) NULL,
 		      FALSE, TRUE, (const char *) NULL,
 		      (const char *) NULL, (const char *) NULL);
   if (q->ipid < 0)

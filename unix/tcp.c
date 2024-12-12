@@ -396,7 +396,7 @@ ftcp_open (qconn, ibaud, fwait, fuser, nortscts)
   while (! FGOT_SIGNAL ())
     {
       sockaddr_storage speer;
-      size_t clen;
+      socklen_t clen;
       int onew;
       pid_t ipid;
 
