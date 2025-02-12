@@ -1314,6 +1314,8 @@ fdo_call (qdaemon, qstat, qdialer, pfcalled, pterr)
     }
 
   ulog (LOG_NORMAL, "Login successful");
+  DEBUG_MESSAGE0(DEBUG_FRIENDLY, "Login successful");
+
 
   qstat->ttype = STATUS_TALKING;
   qstat->ilast = ixsysdep_time ((long *) NULL);
@@ -1529,6 +1531,7 @@ fdo_call (qdaemon, qstat, qdialer, pfcalled, pterr)
   else
     {
       ulog (LOG_ERROR, "Handshake failed (%s)", zstr + 1);
+	  DEBUG_MESSAGE0(DEBUG_FRIENDLY, "Handshake failed.");
       ubuffree (zstr);
       return FALSE;
     }
@@ -1544,6 +1547,7 @@ fdo_call (qdaemon, qstat, qdialer, pfcalled, pterr)
   if (zstr[0] != 'P')
     {
       ulog (LOG_ERROR, "Bad protocol handshake (%s)", zstr);
+	  DEBUG_MESSAGE0(DEBUG_FRIENDLY, "Handshake failed.");
       ubuffree (zstr);
       return FALSE;
     }
@@ -1667,6 +1671,7 @@ fdo_call (qdaemon, qstat, qdialer, pfcalled, pterr)
       sprintf (zlog, "protocol '%c'", qdaemon->qproto->bname);
     }
   ulog (LOG_NORMAL, "Handshake successful (%s)", zlog);
+  DEBUG_MESSAGE0(DEBUG_FRIENDLY, "Handshake successful.");
   ubuffree (zlog);
 
   *pterr = STATUS_FAILED;
@@ -1712,6 +1717,13 @@ fdo_call (qdaemon, qstat, qdialer, pfcalled, pterr)
 	  qdaemon->csent + qdaemon->creceived,
 	  (iend_time != istart_time
 	   ? (qdaemon->csent + qdaemon->creceived) / (iend_time - istart_time)
+	   : 0));
+
+	DEBUG_MESSAGE3(DEBUG_FRIENDLY,"Complete Duration: %ld seconds Total: %ld bytes Bitrate: %ld bps)",
+	  iend_time - istart_time,
+	  sDaemon.csent + sDaemon.creceived,
+	  (iend_time != istart_time
+	   ? (sDaemon.csent + sDaemon.creceived) / (iend_time - istart_time)
 	   : 0));
 
     if (fret)
@@ -2661,6 +2673,8 @@ faccept_call (puuconf, zconfig, fuuxqt, zlogin, qconn, pzsystem)
   ulog (LOG_NORMAL, "Handshake successful (%s%s)", zgrade, zlog);
 #endif /* ! HAVE_HDB_LOGGING */
 
+  DEBUG_MESSAGE0(DEBUG_FRIENDLY, "Handshake successful.");
+
   ubuffree (zlog);
   ubuffree (zgrade);
 
@@ -2704,6 +2718,14 @@ faccept_call (puuconf, zconfig, fuuxqt, zlogin, qconn, pzsystem)
 	  (iend_time != istart_time
 	   ? (sDaemon.csent + sDaemon.creceived) / (iend_time - istart_time)
 	   : 0));
+
+	DEBUG_MESSAGE3(DEBUG_FRIENDLY,"Complete Duration: %ld seconds Total: %ld bytes Bitrate: %ld bps)",
+	  iend_time - istart_time,
+	  sDaemon.csent + sDaemon.creceived,
+	  (iend_time != istart_time
+	   ? (sDaemon.csent + sDaemon.creceived) / (iend_time - istart_time)
+	   : 0));
+
 
     uclear_queue (&sDaemon);
 

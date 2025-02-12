@@ -165,6 +165,8 @@ extern int iDebug;
 #define DEBUG_INCOMING (01000)
 /* Debug outgoing data.  */
 #define DEBUG_OUTGOING (02000)
+/* Consolidated status for multi-purpose user-friendy messages.  */
+#define DEBUG_FRIENDLY (04000)
 
 /* Maximum possible value for iDebug.  */
 #define DEBUG_MAX (03777)
@@ -176,7 +178,7 @@ extern int iDebug;
    NULL.  The string "all" is also recognized to turn on all
    debugging.  */
 #define DEBUG_NAMES \
-  { "a", "ch", "h", "u", "pr", "po", "co", "s", "e", "i", "o", NULL }
+  { "a", "ch", "h", "u", "pr", "po", "co", "s", "e", "i", "o", "f", NULL }
 
 /* The prefix to use to turn off all debugging.  */
 #define DEBUG_NONE "n"

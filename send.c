@@ -783,10 +783,13 @@ flocal_send_open_file (qtrans, qdaemon)
       qtrans->zlog = zbufalc (sizeof "Sending ( bytes resume at )"
 			      + strlen (zsend) + 50);
       sprintf (qtrans->zlog, "Sending %s (%ld bytes", zsend, qinfo->cbytes);
+
       if (qtrans->ipos > 0)
 	sprintf (qtrans->zlog + strlen (qtrans->zlog), " resume at %ld",
 		 qtrans->ipos);
       strcat (qtrans->zlog, ")");
+
+	  DEBUG_MESSAGE3(DEBUG_FRIENDLY, "Sending: %s Size: %ld Offset: %ld", zsend, qinfo->cbytes, qtrans->ipos);
 
       ubuffree (zalc);
     }
@@ -989,6 +992,7 @@ fremote_rec_reply (qtrans, qdaemon)
 			  + strlen (qtrans->s.zfrom) + 25);
   sprintf (qtrans->zlog, "Sending %s (%ld bytes)", qtrans->s.zfrom,
 	   qinfo->cbytes);
+  DEBUG_MESSAGE2(DEBUG_FRIENDLY, "Sending: %s Size: %ld", qtrans->s.zfrom, qinfo->cbytes);
 
   /* We send the file size because SVR4 UUCP does.  We don't look for
      it.  We send a trailing M if we want to request a hangup.  We
@@ -1196,6 +1200,8 @@ fsend_await_confirm (qtrans, qdaemon, zdata, cdata)
 	  TRUE, qtrans->cbytes, qtrans->isecs, qtrans->imicros,
 	  qdaemon->fcaller);
   qdaemon->csent += qtrans->cbytes;
+  DEBUG_MESSAGE2(DEBUG_FRIENDLY, "Sent: %ul Total: %ul", qtrans->cbytes, qdaemon->csent);
+
 
   if (zerr == NULL)
     {

@@ -492,6 +492,9 @@ flocal_rec_await_reply (qtrans, qdaemon, zdata, cdata)
   qtrans->zlog = zbufalc (sizeof "Receiving " + strlen (zlog));
   sprintf (qtrans->zlog, "Receiving %s", zlog);
 
+  DEBUG_MESSAGE1(DEBUG_FRIENDLY, "Receiving %s", zlog);
+
+
   if (qdaemon->qproto->pffile != NULL)
     {
       boolean fhandled;
@@ -780,6 +783,8 @@ fremote_send_file_init (qdaemon, qcmd, iremote)
 		 crestart);
       strcat (qtrans->zlog, ")");
     }
+
+  DEBUG_MESSAGE2(DEBUG_FRIENDLY, "Receiving: %s Size: %ld", zlog, qcmd->cbytes);
 
   return fqueue_remote (qdaemon, qtrans);
 }
@@ -1100,6 +1105,7 @@ frec_file_end (qtrans, qdaemon, zdata, cdata)
 	  FALSE, qtrans->cbytes, qtrans->isecs, qtrans->imicros,
 	  qdaemon->fcaller);
   qdaemon->creceived += qtrans->cbytes;
+  DEBUG_MESSAGE2(DEBUG_FRIENDLY, "Received: %ld Total: %ld", qtrans->cbytes, qdaemon->creceived);
 
   if (zerr == NULL)
     {
