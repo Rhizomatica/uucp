@@ -35,7 +35,12 @@ const char send_rcsid[] = "$Id: send.c,v 1.57 2002/03/05 19:10:41 ian Rel $";
 #include "system.h"
 #include "prot.h"
 #include "trans.h"
-
+
+#include "sbitx_io.h"
+
+extern controller_conn *connector;
+extern atomic_int shm_connected;
+
 /* We keep this information in the pinfo field of the stransfer
    structure.  */
 struct ssendinfo
@@ -789,7 +794,11 @@ flocal_send_open_file (qtrans, qdaemon)
 		 qtrans->ipos);
       strcat (qtrans->zlog, ")");
 
-	  DEBUG_MESSAGE3(DEBUG_FRIENDLY, "Sending: %s Size: %ld Offset: %ld", zsend, qinfo->cbytes, qtrans->ipos);
+	  DEBUG_MESSAGE1(DEBUG_FRIENDLY, "Sending: %s.", zsend);
+	  if (shm_connected){
+		  sprintf(connector->message, "Sending: %s.", zsend);
+		  connector->message_available = true;
+	  }
 
       ubuffree (zalc);
     }
@@ -992,7 +1001,12 @@ fremote_rec_reply (qtrans, qdaemon)
 			  + strlen (qtrans->s.zfrom) + 25);
   sprintf (qtrans->zlog, "Sending %s (%ld bytes)", qtrans->s.zfrom,
 	   qinfo->cbytes);
-  DEBUG_MESSAGE2(DEBUG_FRIENDLY, "Sending: %s Size: %ld", qtrans->s.zfrom, qinfo->cbytes);
+
+  DEBUG_MESSAGE1(DEBUG_FRIENDLY, "Sending: %s.", qinfo->zfile);
+  if (shm_connected){
+	  sprintf(connector->message, "Sending: %s.", qinfo->zfile);
+	  connector->message_available = true;
+  }
 
   /* We send the file size because SVR4 UUCP does.  We don't look for
      it.  We send a trailing M if we want to request a hangup.  We
@@ -1200,8 +1214,12 @@ fsend_await_confirm (qtrans, qdaemon, zdata, cdata)
 	  TRUE, qtrans->cbytes, qtrans->isecs, qtrans->imicros,
 	  qdaemon->fcaller);
   qdaemon->csent += qtrans->cbytes;
-  DEBUG_MESSAGE2(DEBUG_FRIENDLY, "Sent: %ul Total: %ul", qtrans->cbytes, qdaemon->csent);
 
+  DEBUG_MESSAGE2(DEBUG_FRIENDLY, "Sent: %s (%ld bytes).", qinfo->zfile, qdaemon->csent);
+  if (shm_connected){
+	  sprintf(connector->message, "Sent: %s (%ld bytes).", qinfo->zfile, qdaemon->csent);
+	  connector->message_available = true;
+  }
 
   if (zerr == NULL)
     {

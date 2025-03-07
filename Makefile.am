@@ -30,8 +30,8 @@ LDADD = unix/libunix.a uuconf/libuuconf.a lib/libuucp.a
 UUHEADERS = uucp.h uudefs.h uuconf.h policy.h system.h sysdep.h getopt.h
 
 uucico_SOURCES = uucico.c trans.h trans.c send.c rec.c xcmd.c prot.h prot.c \
-	protg.c protf.c prott.c prote.c proti.c protj.c proty.c protz.c \
-	time.c log.c chat.c conn.h conn.c util.c copy.c $(UUHEADERS)
+	protg.c protf.c prott.c prote.c proti.c protj.c shm.c proty.c protz.c \
+	time.c log.c chat.c conn.h conn.c util.c copy.c  $(UUHEADERS)
 uuxqt_SOURCES = uuxqt.c util.c log.c copy.c $(UUHEADERS)
 uux_SOURCES = uux.c util.c log.c copy.c $(UUHEADERS)
 uucp_SOURCES = uucp.c util.c log.c copy.c $(UUHEADERS)

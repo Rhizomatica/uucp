@@ -35,7 +35,12 @@ const char rec_rcsid[] = "$Id: rec.c,v 1.48 2002/03/05 19:10:41 ian Rel $";
 #include "system.h"
 #include "prot.h"
 #include "trans.h"
-
+
+#include "sbitx_io.h"
+
+extern controller_conn *connector;
+extern atomic_int shm_connected;
+
 /* If the other side does not tell us the size of a file it wants to
    send us, we assume it is this long.  This is only used for free
    space checking.  */
@@ -492,7 +497,11 @@ flocal_rec_await_reply (qtrans, qdaemon, zdata, cdata)
   qtrans->zlog = zbufalc (sizeof "Receiving " + strlen (zlog));
   sprintf (qtrans->zlog, "Receiving %s", zlog);
 
-  DEBUG_MESSAGE1(DEBUG_FRIENDLY, "Receiving %s", zlog);
+  DEBUG_MESSAGE1(DEBUG_FRIENDLY, "Receiving: %s.", zlog);
+  if (shm_connected){
+	  sprintf(connector->message, "Receiving: %s.", zlog);
+	  connector->message_available = true;
+  }
 
 
   if (qdaemon->qproto->pffile != NULL)
@@ -784,7 +793,11 @@ fremote_send_file_init (qdaemon, qcmd, iremote)
       strcat (qtrans->zlog, ")");
     }
 
-  DEBUG_MESSAGE2(DEBUG_FRIENDLY, "Receiving: %s Size: %ld", zlog, qcmd->cbytes);
+  DEBUG_MESSAGE1(DEBUG_FRIENDLY, "Receiving %s.", zlog);
+  if (shm_connected){
+	  sprintf(connector->message, "Receiving: %s.", zlog);
+	  connector->message_available = true;
+  }
 
   return fqueue_remote (qdaemon, qtrans);
 }
@@ -1105,7 +1118,12 @@ frec_file_end (qtrans, qdaemon, zdata, cdata)
 	  FALSE, qtrans->cbytes, qtrans->isecs, qtrans->imicros,
 	  qdaemon->fcaller);
   qdaemon->creceived += qtrans->cbytes;
-  DEBUG_MESSAGE2(DEBUG_FRIENDLY, "Received: %ld Total: %ld", qtrans->cbytes, qdaemon->creceived);
+
+  DEBUG_MESSAGE2(DEBUG_FRIENDLY, "Received: %s (%ld bytes).", qinfo->zfile, qdaemon->creceived);
+  if (shm_connected){
+	  sprintf(connector->message, "Received: %s (%ld bytes).", qinfo->zfile, qdaemon->creceived);
+	  connector->message_available = true;
+  }
 
   if (zerr == NULL)
     {

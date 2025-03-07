@@ -23,6 +23,11 @@
    */
 
 #include "uucp.h"
+#include "sbitx_io.h"
+#include "shm.h"
+
+controller_conn *connector = NULL;
+atomic_int shm_connected = 0;
 
 #if USE_RCS_ID
 const char uucico_rcsid[] = "$Id: uucico.c,v 1.204 2003/05/29 06:00:49 ian Rel $";
@@ -497,6 +502,14 @@ main (argc, argv)
   ulog_to_file (puuconf, TRUE);
   ulog_fatal_fn (uabort);
 
+  if (qport->uuconf_ttype != UUCONF_PORTTYPE_TCP)
+  {
+	  connector = shm_attach(SYSV_SHM_CONTROLLER_KEY_STR, sizeof(controller_conn));
+	  if (connector){
+		  shm_connected = 1;
+	  }
+  }
+
   if (fmaster)
     {
       if (zsystem != NULL)
@@ -533,6 +546,12 @@ main (argc, argv)
 	  else
 	    {
 	      fLocked_system = TRUE;
+
+		  if (shm_connected){
+			  sprintf(connector->message, "Initiating Connection");
+			  connector->message_available = true;
+		  }
+
 	      fret = fcall (puuconf, zconfig, fuuxqt, &sLocked_system, qport,
 			    fifwork, fforce, fdetach, fquiet, ftrynext);
 	      if (fLocked_system)
@@ -617,6 +636,12 @@ main (argc, argv)
 		  else
 		    {
 		      fLocked_system = TRUE;
+
+			  if (shm_connected){
+				  sprintf(connector->message, "Initiating Connection");
+				  connector->message_available = true;
+			  }
+
 		      if (! fcall (puuconf, zconfig, fuuxqt, &sLocked_system,
 				   qport, TRUE, fforce, fdetach, fquiet,
 				   ftrynext))
@@ -785,6 +810,9 @@ main (argc, argv)
   usysdep_exit (fret);
 
   /* Avoid complaints about not returning.  */
+  if (connector)
+	  shm_dettach(SYSV_SHM_CONTROLLER_KEY_STR, sizeof(controller_conn), connector);
+
   return 0;
 }
 
@@ -1195,6 +1223,12 @@ fconn_call (qdaemon, qport, qstat, cretry, pfcalled)
 	      qsys->uuconf_zname, qsys->uuconf_zalternate,
 	  zLdevice == NULL ? (char *) "unknown" : zLdevice);
 
+	  DEBUG_MESSAGE1(DEBUG_FRIENDLY, "Calling: %s.", qsys->uuconf_zname);
+	  if (shm_connected){
+		  sprintf(connector->message, "Calling: %s.", qsys->uuconf_zname);
+		  connector->message_available = true;
+	  }
+
       qdialer = NULL;
 
       if (! fconn_dial (&sconn, puuconf, qsys, qsys->uuconf_zphone,
@@ -1314,8 +1348,12 @@ fdo_call (qdaemon, qstat, qdialer, pfcalled, pterr)
     }
 
   ulog (LOG_NORMAL, "Login successful");
-  DEBUG_MESSAGE0(DEBUG_FRIENDLY, "Login successful");
 
+  DEBUG_MESSAGE0(DEBUG_FRIENDLY, "Login Successful");
+  if (shm_connected){
+	  sprintf(connector->message, "Login Successful.");
+	  connector->message_available = true;
+  }
 
   qstat->ttype = STATUS_TALKING;
   qstat->ilast = ixsysdep_time ((long *) NULL);
@@ -1531,7 +1569,12 @@ fdo_call (qdaemon, qstat, qdialer, pfcalled, pterr)
   else
     {
       ulog (LOG_ERROR, "Handshake failed (%s)", zstr + 1);
-	  DEBUG_MESSAGE0(DEBUG_FRIENDLY, "Handshake failed.");
+	  DEBUG_MESSAGE0(DEBUG_FRIENDLY, "Handshake Failed.");
+	  if (shm_connected){
+		  sprintf(connector->message, "Handshake Failed.");
+		  connector->message_available = true;
+	  }
+
       ubuffree (zstr);
       return FALSE;
     }
@@ -1547,7 +1590,11 @@ fdo_call (qdaemon, qstat, qdialer, pfcalled, pterr)
   if (zstr[0] != 'P')
     {
       ulog (LOG_ERROR, "Bad protocol handshake (%s)", zstr);
-	  DEBUG_MESSAGE0(DEBUG_FRIENDLY, "Handshake failed.");
+	  DEBUG_MESSAGE0(DEBUG_FRIENDLY, "Handshake Failed.");
+	  if (shm_connected){
+		  sprintf(connector->message, "Handshake Failed.");
+		  connector->message_available = true;
+	  }
       ubuffree (zstr);
       return FALSE;
     }
@@ -1671,7 +1718,12 @@ fdo_call (qdaemon, qstat, qdialer, pfcalled, pterr)
       sprintf (zlog, "protocol '%c'", qdaemon->qproto->bname);
     }
   ulog (LOG_NORMAL, "Handshake successful (%s)", zlog);
-  DEBUG_MESSAGE0(DEBUG_FRIENDLY, "Handshake successful.");
+  DEBUG_MESSAGE0(DEBUG_FRIENDLY, "Handshake Successful.");
+  if (shm_connected){
+	  sprintf(connector->message, "Handshake Successful.");
+	  connector->message_available = true;
+  }
+
   ubuffree (zlog);
 
   *pterr = STATUS_FAILED;
@@ -1719,12 +1771,22 @@ fdo_call (qdaemon, qstat, qdialer, pfcalled, pterr)
 	   ? (qdaemon->csent + qdaemon->creceived) / (iend_time - istart_time)
 	   : 0));
 
-	DEBUG_MESSAGE3(DEBUG_FRIENDLY,"Complete Duration: %ld seconds Total: %ld bytes Bitrate: %ld bps)",
+	DEBUG_MESSAGE3(DEBUG_FRIENDLY,"Call Complete. %ld s  %ld bytes  %ld bps",
 	  iend_time - istart_time,
 	  sDaemon.csent + sDaemon.creceived,
 	  (iend_time != istart_time
 	   ? (sDaemon.csent + sDaemon.creceived) / (iend_time - istart_time)
 	   : 0));
+
+	if (shm_connected){
+		sprintf(connector->message, "Call Complete. %lds %ldb %ldbps",
+				iend_time - istart_time,
+				sDaemon.csent + sDaemon.creceived,
+				(iend_time != istart_time
+				 ? (sDaemon.csent + sDaemon.creceived) / (iend_time - istart_time)
+				 : 0));
+		connector->message_available = true;
+	}
 
     if (fret)
       {
@@ -1948,6 +2010,12 @@ faccept_call (puuconf, zconfig, fuuxqt, zlogin, qconn, pzsystem)
 
   ulog (LOG_NORMAL, "Incoming call (login %s port %s)", zlogin,
 	zLdevice == NULL ? (char *) "unknown" : zLdevice);
+
+  DEBUG_MESSAGE0(DEBUG_FRIENDLY, "Incoming call");
+  if (shm_connected){
+	  sprintf(connector->message, "Incoming Call.");
+	  connector->message_available = true;
+  }
 
   istart_time = ixsysdep_time ((long *) NULL);
 
@@ -2673,7 +2741,11 @@ faccept_call (puuconf, zconfig, fuuxqt, zlogin, qconn, pzsystem)
   ulog (LOG_NORMAL, "Handshake successful (%s%s)", zgrade, zlog);
 #endif /* ! HAVE_HDB_LOGGING */
 
-  DEBUG_MESSAGE0(DEBUG_FRIENDLY, "Handshake successful.");
+  DEBUG_MESSAGE0(DEBUG_FRIENDLY, "Handshake Successful.");
+  if (shm_connected){
+	  sprintf(connector->message, "Handshake Successful.");
+	  connector->message_available = true;
+  }
 
   ubuffree (zlog);
   ubuffree (zgrade);
@@ -2719,13 +2791,22 @@ faccept_call (puuconf, zconfig, fuuxqt, zlogin, qconn, pzsystem)
 	   ? (sDaemon.csent + sDaemon.creceived) / (iend_time - istart_time)
 	   : 0));
 
-	DEBUG_MESSAGE3(DEBUG_FRIENDLY,"Complete Duration: %ld seconds Total: %ld bytes Bitrate: %ld bps)",
+    DEBUG_MESSAGE3(DEBUG_FRIENDLY,"Complete Duration: %ld seconds Total: %ld bytes Bitrate: %ld bps)",
 	  iend_time - istart_time,
 	  sDaemon.csent + sDaemon.creceived,
 	  (iend_time != istart_time
 	   ? (sDaemon.csent + sDaemon.creceived) / (iend_time - istart_time)
 	   : 0));
 
+	if (shm_connected){
+		sprintf(connector->message, "Call Complete. %lds %ldb %ldbps",
+				iend_time - istart_time,
+				sDaemon.csent + sDaemon.creceived,
+				(iend_time != istart_time
+				 ? (sDaemon.csent + sDaemon.creceived) / (iend_time - istart_time)
+				 : 0));
+		connector->message_available = true;
+	}
 
     uclear_queue (&sDaemon);
 
