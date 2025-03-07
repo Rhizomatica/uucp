@@ -502,13 +502,13 @@ main (argc, argv)
   ulog_to_file (puuconf, TRUE);
   ulog_fatal_fn (uabort);
 
-  if (qport->uuconf_ttype != UUCONF_PORTTYPE_TCP)
-  {
-	  connector = shm_attach(SYSV_SHM_CONTROLLER_KEY_STR, sizeof(controller_conn));
-	  if (connector){
-		  shm_connected = 1;
-	  }
-  }
+  if (qport == NULL || qport->uuconf_ttype != UUCONF_PORTTYPE_TCP)
+    {
+      connector = shm_attach(SYSV_SHM_CONTROLLER_KEY_STR, sizeof(controller_conn));
+      if (connector){
+          shm_connected = 1;
+        }
+    }
 
   if (fmaster)
     {

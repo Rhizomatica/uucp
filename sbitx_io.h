@@ -55,9 +55,9 @@ typedef struct
 
     int radio_fd;
 
-	// for messaging system
-	char message[MAX_MESSAGE_SIZE];
-	atomic_bool message_available;
+    // for messaging system
+    char message[MAX_MESSAGE_SIZE];
+    atomic_bool message_available;
 } controller_conn;
 
 

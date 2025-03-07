@@ -101,9 +101,9 @@ void *shm_attach(key_t key, size_t size)
         return NULL;
 
 
-	void *tmp = shmat(shmid, NULL, 0);
-	if (tmp == (void *)-1)
-		return NULL;
+    void *tmp = shmat(shmid, NULL, 0);
+    if (tmp == (void *)-1)
+        return NULL;
 
     return tmp;
 }
@@ -114,10 +114,10 @@ bool shm_dettach(key_t key, size_t size, void *ptr)
     if (shmid == -1)
         return false;
 
-	if (!ptr)
-		return false;
+    if (!ptr)
+        return false;
 
-	shmid = shmdt(ptr);
+    shmid = shmdt(ptr);
     if (shmid == -1)
         return false;
 
