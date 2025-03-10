@@ -185,6 +185,7 @@ static const struct option asLongopts[] =
   { "force", no_argument, NULL, 'f'},
   { "grade", required_argument, NULL, 'g'},
   { "stdin", required_argument, NULL, 'i' },
+  { "shm", required_argument, NULL, 'm' },
   { "prompt", no_argument, NULL, 'l' },
   { "port", required_argument, NULL, 'p' },
   { "nouuxqt", no_argument, NULL, 'q' },
@@ -244,6 +245,7 @@ main (argc, argv)
   struct uuconf_port *qport;
   struct uuconf_port sport;
   boolean fret = TRUE;
+  boolean connect_shm = FALSE;
   pointer puuconf;
   int iuuconf;
 #if DEBUG > 1
@@ -258,9 +260,9 @@ main (argc, argv)
     ++zProgram;
 
 #if COHERENT_C_OPTION
-  zopts = "c:CDefg:i:I:lp:qr:s:S:u:x:X:vwz";
+  zopts = "c:CDefg:i:I:lp:qr:s:S:u:x:X:vwzm";
 #else
-  zopts = "cCDefg:i:I:lp:qr:s:S:u:x:X:vwz";
+  zopts = "cCDefg:i:I:lp:qr:s:S:u:x:X:vwzm";
 #endif
 
   while ((iopt = getopt_long (argc, argv, zopts,
@@ -332,6 +334,10 @@ main (argc, argv)
 	case 'l':
 	  /* Prompt for login name and password.  */
 	  flogin = TRUE;
+	  break;
+
+        case 'm':
+	  connect_shm = TRUE;
 	  break;
 
 	case 'p':
@@ -502,7 +508,7 @@ main (argc, argv)
   ulog_to_file (puuconf, TRUE);
   ulog_fatal_fn (uabort);
 
-  if (qport == NULL || qport->uuconf_ttype != UUCONF_PORTTYPE_TCP)
+  if (connect_shm == TRUE)
     {
       connector = shm_attach(SYSV_SHM_CONTROLLER_KEY_STR, sizeof(controller_conn));
       if (connector){
