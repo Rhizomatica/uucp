@@ -1,3 +1,9 @@
+uucp (1.07-31) unstable; urgency=medium
+
+	* Add friendly level and shared memory interface
+
+ -- Rafael Diniz <rafael@riseup.net>  Mon, 10 Mar 2025 10:00:00 +0000
+
 uucp (1.07-30) unstable; urgency=medium
 
   * fix issues with gcc14 (Closes: #1075610)
