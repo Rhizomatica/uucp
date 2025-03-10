@@ -1217,7 +1217,7 @@ fsend_await_confirm (qtrans, qdaemon, zdata, cdata)
 
   DEBUG_MESSAGE2(DEBUG_FRIENDLY, "Sent: %s (%ld bytes).", basename(qinfo->zfile), qdaemon->csent);
   if (shm_connected){
-    sprintf(connector->message, "Sent: %s (%ld bytes).", basename(qinfo->zfile), qdaemon->csent);
+    sprintf(connector->message, "Sent: %s (%ld bytes).", basename(qtrans->s.zfrom), qdaemon->csent);
     connector->message_available = true;
   }
 
