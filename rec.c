@@ -793,10 +793,10 @@ fremote_send_file_init (qdaemon, qcmd, iremote)
       strcat (qtrans->zlog, ")");
     }
 
-  DEBUG_MESSAGE1(DEBUG_FRIENDLY, "Receiving %s.", zlog);
+  DEBUG_MESSAGE1(DEBUG_FRIENDLY, "Receiving %s.", basename(zlog));
   if (shm_connected){
-	  sprintf(connector->message, "Receiving: %s.", zlog);
-	  connector->message_available = true;
+    sprintf(connector->message, "Receiving: %s.", basename(zlog));
+    connector->message_available = true;
   }
 
   return fqueue_remote (qdaemon, qtrans);
