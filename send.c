@@ -794,11 +794,11 @@ flocal_send_open_file (qtrans, qdaemon)
 		 qtrans->ipos);
       strcat (qtrans->zlog, ")");
 
-	  DEBUG_MESSAGE1(DEBUG_FRIENDLY, "Sending: %s.", zsend);
-	  if (shm_connected){
-		  sprintf(connector->message, "Sending: %s.", zsend);
-		  connector->message_available = true;
-	  }
+      DEBUG_MESSAGE1(DEBUG_FRIENDLY, "Sending: %s.", basename(zsend));
+      if (shm_connected){
+        sprintf(connector->message, "Sending: %s.", basename(zsend));
+        connector->message_available = true;
+      }
 
       ubuffree (zalc);
     }
@@ -1002,10 +1002,10 @@ fremote_rec_reply (qtrans, qdaemon)
   sprintf (qtrans->zlog, "Sending %s (%ld bytes)", qtrans->s.zfrom,
 	   qinfo->cbytes);
 
-  DEBUG_MESSAGE1(DEBUG_FRIENDLY, "Sending: %s.", qinfo->zfile);
+  DEBUG_MESSAGE1(DEBUG_FRIENDLY, "Sending: %s.", basename(qinfo->zfile));
   if (shm_connected){
-	  sprintf(connector->message, "Sending: %s.", qinfo->zfile);
-	  connector->message_available = true;
+    sprintf(connector->message, "Sending: %s.", basename(qinfo->zfile));
+    connector->message_available = true;
   }
 
   /* We send the file size because SVR4 UUCP does.  We don't look for
@@ -1215,10 +1215,10 @@ fsend_await_confirm (qtrans, qdaemon, zdata, cdata)
 	  qdaemon->fcaller);
   qdaemon->csent += qtrans->cbytes;
 
-  DEBUG_MESSAGE2(DEBUG_FRIENDLY, "Sent: %s (%ld bytes).", qinfo->zfile, qdaemon->csent);
+  DEBUG_MESSAGE2(DEBUG_FRIENDLY, "Sent: %s (%ld bytes).", basename(qinfo->zfile), qdaemon->csent);
   if (shm_connected){
-	  sprintf(connector->message, "Sent: %s (%ld bytes).", qinfo->zfile, qdaemon->csent);
-	  connector->message_available = true;
+    sprintf(connector->message, "Sent: %s (%ld bytes).", basename(qinfo->zfile), qdaemon->csent);
+    connector->message_available = true;
   }
 
   if (zerr == NULL)

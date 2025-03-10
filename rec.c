@@ -497,10 +497,10 @@ flocal_rec_await_reply (qtrans, qdaemon, zdata, cdata)
   qtrans->zlog = zbufalc (sizeof "Receiving " + strlen (zlog));
   sprintf (qtrans->zlog, "Receiving %s", zlog);
 
-  DEBUG_MESSAGE1(DEBUG_FRIENDLY, "Receiving: %s.", zlog);
+  DEBUG_MESSAGE1(DEBUG_FRIENDLY, "Receiving: %s.", basename(zlog));
   if (shm_connected){
-	  sprintf(connector->message, "Receiving: %s.", zlog);
-	  connector->message_available = true;
+    sprintf(connector->message, "Receiving: %s.", basename(zlog));
+    connector->message_available = true;
   }
 
 
@@ -1119,10 +1119,10 @@ frec_file_end (qtrans, qdaemon, zdata, cdata)
 	  qdaemon->fcaller);
   qdaemon->creceived += qtrans->cbytes;
 
-  DEBUG_MESSAGE2(DEBUG_FRIENDLY, "Received: %s (%ld bytes).", qinfo->zfile, qdaemon->creceived);
+  DEBUG_MESSAGE2(DEBUG_FRIENDLY, "Received: %s (%ld bytes).", basename(qinfo->zfile), qdaemon->creceived);
   if (shm_connected){
-	  sprintf(connector->message, "Received: %s (%ld bytes).", qinfo->zfile, qdaemon->creceived);
-	  connector->message_available = true;
+    sprintf(connector->message, "Received: %s (%ld bytes).", basename(qinfo->zfile), qdaemon->creceived);
+    connector->message_available = true;
   }
 
   if (zerr == NULL)

@@ -554,10 +554,10 @@ main (argc, argv)
 	    {
 	      fLocked_system = TRUE;
 
-		  if (shm_connected){
-			  sprintf(connector->message, "Initiating Connection");
-			  connector->message_available = true;
-		  }
+              if (shm_connected){
+                sprintf(connector->message, "Initiating Connection.");
+                connector->message_available = true;
+              }
 
 	      fret = fcall (puuconf, zconfig, fuuxqt, &sLocked_system, qport,
 			    fifwork, fforce, fdetach, fquiet, ftrynext);
@@ -644,10 +644,10 @@ main (argc, argv)
 		    {
 		      fLocked_system = TRUE;
 
-			  if (shm_connected){
-				  sprintf(connector->message, "Initiating Connection");
-				  connector->message_available = true;
-			  }
+                      if (shm_connected){
+                          sprintf(connector->message, "Initiating Connection.");
+                          connector->message_available = true;
+                      }
 
 		      if (! fcall (puuconf, zconfig, fuuxqt, &sLocked_system,
 				   qport, TRUE, fforce, fdetach, fquiet,
@@ -818,7 +818,7 @@ main (argc, argv)
 
   /* Avoid complaints about not returning.  */
   if (connector)
-	  shm_dettach(SYSV_SHM_CONTROLLER_KEY_STR, sizeof(controller_conn), connector);
+    shm_dettach(SYSV_SHM_CONTROLLER_KEY_STR, sizeof(controller_conn), connector);
 
   return 0;
 }
@@ -1779,22 +1779,21 @@ fdo_call (qdaemon, qstat, qdialer, pfcalled, pterr)
 	   ? (qdaemon->csent + qdaemon->creceived) / (iend_time - istart_time)
 	   : 0));
 
-	DEBUG_MESSAGE3(DEBUG_FRIENDLY,"Call Complete. %ld s  %ld bytes  %ld bps",
+    DEBUG_MESSAGE3(DEBUG_FRIENDLY,"Call Complete. %ld s  %ld bytes  %ld bps",
 	  iend_time - istart_time,
 	  sDaemon.csent + sDaemon.creceived,
 	  (iend_time != istart_time
 	   ? (sDaemon.csent + sDaemon.creceived) / (iend_time - istart_time)
 	   : 0));
 
-	if (shm_connected){
-		sprintf(connector->message, "Call Complete. %lds %ldb %ldbps",
-				iend_time - istart_time,
-				sDaemon.csent + sDaemon.creceived,
-				(iend_time != istart_time
-				 ? (sDaemon.csent + sDaemon.creceived) / (iend_time - istart_time)
-				 : 0));
-		connector->message_available = true;
-	}
+    if (shm_connected){
+      sprintf(connector->message, "Call Complete. %ld sec %.2f bps.",
+              iend_time - istart_time,
+              (iend_time != istart_time
+               ? (float) (sDaemon.csent + sDaemon.creceived) / (float) (iend_time - istart_time)
+               : 0));
+        connector->message_available = true;
+    }
 
     if (fret)
       {
