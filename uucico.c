@@ -186,7 +186,7 @@ static const struct option asLongopts[] =
   { "force", no_argument, NULL, 'f'},
   { "grade", required_argument, NULL, 'g'},
   { "stdin", required_argument, NULL, 'i' },
-  { "shm", required_argument, NULL, 'm' },
+  { "shm", no_argument, NULL, 'm' },
   { "prompt", no_argument, NULL, 'l' },
   { "port", required_argument, NULL, 'p' },
   { "nouuxqt", no_argument, NULL, 'q' },
