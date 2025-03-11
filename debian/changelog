@@ -1,3 +1,9 @@
+uucp (1.07-33) stable; urgency=medium
+
+  * Hopefully latest fix for shm uucp support.
+
+ -- Rafael Diniz <rafael@riseup.net>  Mon, 11 Mar 2025 13:00:00 +0000
+
 uucp (1.07-32) unstable; urgency=medium
 
   * Bump version a bit more, to be on the safe size
