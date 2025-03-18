@@ -2805,15 +2805,14 @@ faccept_call (puuconf, zconfig, fuuxqt, zlogin, qconn, pzsystem)
 	   ? (sDaemon.csent + sDaemon.creceived) / (iend_time - istart_time)
 	   : 0));
 
-	if (shm_connected){
-		sprintf(connector->message, "Call Complete. %lds %ldb %ldbps",
-				iend_time - istart_time,
-				sDaemon.csent + sDaemon.creceived,
-				(iend_time != istart_time
-				 ? (sDaemon.csent + sDaemon.creceived) / (iend_time - istart_time)
-				 : 0));
-		connector->message_available = true;
-	}
+    if (shm_connected){
+      sprintf(connector->message, "Call Complete. %ld sec %.2f bps.",
+              iend_time - istart_time,
+              (iend_time != istart_time
+               ? (float) (sDaemon.csent + sDaemon.creceived) / (float) (iend_time - istart_time)
+               : 0));
+        connector->message_available = true;
+    }
 
     uclear_queue (&sDaemon);
 
