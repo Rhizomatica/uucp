@@ -57,9 +57,9 @@
 #define FD_CLOEXEC 1
 #endif
 
-#ifndef time
-extern time_t time ();
-#endif
+//XXX #ifndef time
+//XXX extern time_t time ();
+//XXX #endif
 
 /* Open a file to send to another system, and return the mode and
    the size.  */

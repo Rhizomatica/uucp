@@ -73,9 +73,9 @@
 #endif
 
 /* External functions.  */
-#ifndef lseek
-extern off_t lseek ();
-#endif
+//XXX #ifndef lseek
+//XXX extern off_t lseek ();
+//XXX #endif
 
 #define ZCHARS \
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"

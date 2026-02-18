@@ -98,14 +98,14 @@ extern long times ();
 
 #endif /* HAVE_TIMES */
 
-#ifndef time
-extern time_t time ();
-#endif
-#if HAVE_SYSCONF
-#ifndef sysconf
-extern long sysconf ();
-#endif
-#endif
+//XXX #ifndef time
+//XXX extern time_t time ();
+//XXX #endif
+//XXX #if HAVE_SYSCONF
+//XXX #ifndef sysconf
+//XXX extern long sysconf ();
+//XXX #endif
+//XXX #endif
 
 /* Get the time in seconds and microseconds; this need only work
    within the process when called from the system independent code.

@@ -34,9 +34,9 @@
 #include <time.h>
 #endif
 
-#ifndef ctime
-extern char *ctime ();
-#endif
+//XXX #ifndef ctime
+//XXX extern char *ctime ();
+//XXX #endif
 
 /* Mail a message to a user.  */
 

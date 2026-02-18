@@ -233,10 +233,11 @@ struct Host_entry
 
 extern int optind;                /* GETOPT : Option Index */
 extern char *optarg;            /* GETOPT : Option Value */
-extern int getopt();
-#if ! HAVE_STDLIB_H
-   extern pointer *calloc();
-#endif  /* HAVE_STDLIB_H */
+extern int getopt (int argc, char *const *argv, const char *optstring);
+
+//XXX #if ! HAVE_STDLIB_H
+//XXX    extern pointer *calloc();
+//XXX #endif  /* HAVE_STDLIB_H */
 /*
  * Default files to read. Taken from Taylor compile-time configuration.
  * def_logs must look like an argvec, hence the dummy argv[0].

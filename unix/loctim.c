@@ -11,9 +11,9 @@
 
 #include "system.h"
 
-#ifndef localtime
-extern struct tm *localtime ();
-#endif
+//XXX #ifndef localtime
+//XXX extern struct tm *localtime ();
+//XXX #endif
 
 void
 usysdep_localtime (itime, q)

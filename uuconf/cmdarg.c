@@ -30,11 +30,11 @@ const char _uuconf_cmdarg_rcsid[] = "$Id: cmdarg.c,v 1.7 2002/03/05 19:10:42 ian
 
 #include <ctype.h>
 
-#undef strcmp
-#if HAVE_STRCASECMP
-#undef strcasecmp
-#endif
-extern int strcmp (), strcasecmp ();
+//XXX #undef strcmp
+//XXX #if HAVE_STRCASECMP
+//XXX #undef strcasecmp
+//XXX #endif
+//XXX extern int strcmp (), strcasecmp ();
 
 /* Look up a command with arguments in a table and execute it.  */
 

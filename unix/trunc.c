@@ -26,9 +26,9 @@
 #endif
 
 /* External functions.  */
-#ifndef lseek
-extern off_t lseek ();
-#endif
+//XXX #ifndef lseek
+//XXX extern off_t lseek ();
+//XXX #endif
 
 /* Truncate a file to zero length.  If this fails, it closes and
    removes the file.  We support a number of different means of

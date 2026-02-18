@@ -16,7 +16,7 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 ifeq ($(origin CC),default)
 CC = $(DEB_HOST_GNU_TYPE)-gcc
 endif
-CFLAGS += -Wall -g $(LDFLAGS) $(CPPFLAGS)
+CFLAGS += -Wall -g $(LDFLAGS) $(CPPFLAGS) -D_FILE_OFFSET_BITS=64
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
 else

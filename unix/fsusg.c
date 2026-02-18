@@ -23,7 +23,7 @@
 #include "sysdep.h"
 #include "fsusg.h"
 
-int statfs ();
+//XXX int statfs ();
 
 #if HAVE_SYS_PARAM_H
 #include <sys/param.h>
@@ -55,7 +55,7 @@ int statfs ();
 
 #if HAVE_SYS_STATVFS_H		/* SVR4.  */
 #include <sys/statvfs.h>
-int statvfs ();
+//XXX int statvfs ();
 #endif
 
 #if HAVE_USTAT_H		/* SVR2 and others.  */

@@ -6,5 +6,6 @@
 #
 
 if [ -x /usr/lib/uucp/uudemon.day ]; then
-	su uucp -s /bin/sh -c "/usr/lib/uucp/uudemon.day root"
+	# replace 'su' by 'runser': su uucp -s /bin/sh -c "/usr/lib/uucp/uudemon.day root"
+        runuser -u uucp /usr/lib/uucp/uudemon.day root
 fi

@@ -97,17 +97,17 @@ extern struct passwd *getpwuid ();
 #endif
 #if HAVE_GETCWD
 #ifndef getcwd
-extern char *getcwd ();
+//XXX extern char *getcwd ();
 #endif
 #endif
 #if HAVE_GETWD
 #ifndef getwd
-extern char *getwd ();
+//XXX extern char *getwd ();
 #endif
 #endif
 #if HAVE_SYSCONF
 #ifndef sysconf
-extern long sysconf ();
+//XXX extern long sysconf ();
 #endif
 #endif
 
@@ -182,6 +182,14 @@ usysdep_initialize (puuconf,iflags)
 #endif /* ! HAVE_SYSCONF */
 #endif /* ! HAVE_GETDTABLESIZE */
 
+      /*
+       * we don't have to close everything as this might be
+       * really a lot nowadays.
+       * we limit ourselves to 4k
+       */
+      if (cdescs > 4096) {
+        cdescs=4096;
+      }
       for (o = 3; o < cdescs; o++)
 	(void) close (o);
     }

@@ -70,9 +70,9 @@ const char lock_rcsid[] = "$Id: lock.c,v 1.23 2002/03/05 19:10:42 ian Rel $";
 #define SEEK_SET 0
 #endif
 
-#ifndef localtime
-extern struct tm *localtime ();
-#endif
+//XXX #ifndef localtime
+//XXX extern struct tm *localtime ();
+//XXX #endif
 
 #if HAVE_QNX_LOCKFILES
 static boolean fsqnx_stale P((unsigned long ipid, unsigned long inme,

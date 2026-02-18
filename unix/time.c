@@ -9,9 +9,9 @@
 
 #include "system.h"
 
-#ifndef time
-extern time_t time ();
-#endif
+//XXX #ifndef time
+//XXX extern time_t time ();
+//XXX #endif
 
 /* Get the time in seconds since the epoch, with optional
    microseconds.  We use ixsysdep_process_time to get the microseconds

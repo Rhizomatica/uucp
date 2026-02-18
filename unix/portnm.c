@@ -13,9 +13,9 @@
 #include <sys/socket.h>
 #endif
 
-#ifndef ttyname
-extern char *ttyname ();
-#endif
+//XXX #ifndef ttyname
+//XXX extern char *ttyname ();
+//XXX #endif
 
 /* Get the port name of standard input.  I assume that Unix systems
    generally support ttyname.  If they don't, this function can just

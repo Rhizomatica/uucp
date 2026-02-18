@@ -14,7 +14,6 @@
 protocol gvG
 protocol-parameter G packet-size 1024
 # protocol-parameter G window 7
-protocol-parameter G short-packets
 
 #
 # Our remote uucp connection.

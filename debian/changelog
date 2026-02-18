@@ -1,3 +1,21 @@
+uucp (1.07-35) unstable; urgency=medium
+
+  * This is really 1.07-31 Debian upstream
+  * debian/control: bump standard to 4.7.2 (no changes)
+  * debian/rules: add -D_FILE_OFFSET_BITS=64 to CFLAGS
+    (Closes: #747018)
+    (thanks a lot to Christian Garbs for reporting an issue and
+     providing a fix)
+  * debian/uucp.cron.daily: replace su by runuser (Closes: #1087164)
+    (thanks a lot to Marco d'Itri for the hint)
+  * debian/etc.uucp/sys: remove "short-packets" line (Closes: #942818)
+    (thanks a lot to John Goerzen for finding this)
+  * add gcc15.patch (Closes: #1098051)
+  * add limit-fd-handling.patch (Closes: #942859)
+    (thanks a lot to John Goerzen for the suggestion)
+
+ -- Thorsten Alteholz <debian@alteholz.de>  Mon, 15 Sep 2025 09:00:00 +0200
+
 uucp (1.07-34) stable; urgency=medium
 
   * Improved call termination shm message.

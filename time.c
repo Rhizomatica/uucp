@@ -40,12 +40,12 @@ const char time_rcsid[] = "$Id: time.c,v 1.22 2002/03/05 19:10:41 ian Rel $";
 #include "uuconf.h"
 
 /* External functions.  */
-#ifndef time
-extern time_t time ();
-#endif
-#ifndef localtime
-extern struct tm *localtime ();
-#endif
+//XXX #ifndef time
+//XXX extern time_t time ();
+//XXX #endif
+//XXX #ifndef localtime
+//XXX extern struct tm *localtime ();
+//XXX #endif
 
 /* See if the current time matches a time span.  If it does, return
    TRUE, set *pival to the value for the matching span, and set

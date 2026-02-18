@@ -5,7 +5,7 @@ Maintainer: Thorsten Alteholz <debian@alteholz.de>
 Build-Depends: debhelper-compat (= 12)
 	, texinfo
 	, libpam-dev
-Standards-Version: 4.6.2
+Standards-Version: 4.7.2
 Homepage: http://airs.com/ian/uucp.html
 Vcs-Browser: https://salsa.debian.org/alteholz/uucp
 Vcs-Git: https://salsa.debian.org/alteholz/uucp.git
