@@ -227,6 +227,39 @@ to prompt only for the password, not the login name.
 If a call fails after the remote system is reached, try the next
 alternate rather than simply exiting.
 .TP 5
+.B \-Y, \-\-pre-agreed
+Use the pre-agreed session startup.  Instead of the
+.BR Shere / S / ROK / P / U
+exchange, the calling system sends a single
+.B Y
+command naming the protocol it will use, its own system name and the
+features it supports, and the called system answers with the same
+command minus the name.  This turns six line turnarounds into two,
+which matters on a half duplex radio link where each one costs a
+transmit/receive cycle.  The protocol and its parameters are not
+negotiated: they are taken from the
+.B protocol
+and
+.B protocol-parameter
+commands in the
+.I sys
+file, which must therefore agree at both ends.  Sequence numbers
+cannot be used in this mode and
+.I uucico
+will refuse to start if they are configured.
+.IP
+This mode performs no UUCP-layer authentication, so use it only where
+the link itself is the trust anchor.
+.IP
+A called system given
+.B \-Y
+still accepts callers that do not use it, falling back to the normal
+handshake as soon as it sees their chat script, so the two can be
+mixed on one network.  A calling system given
+.B \-Y
+cannot talk to a called system that lacks support for it; enable it on
+the called systems first.
+.TP 5
 .B \-i type, \-\-stdin type
 Set the type of port to use when using standard input.  The only
 support port type is TLI, and this is only available on machines which

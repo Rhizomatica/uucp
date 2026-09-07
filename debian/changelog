@@ -1,3 +1,17 @@
+uucp (1.07-36) stable; urgency=medium
+
+  * Add pre-agreed session startup ("-Y", "--pre-agreed"), which replaces
+    the Shere/S/ROK/P/U handshake with a single Y command exchange. This
+    turns six line turnarounds into two, which matters on the half duplex
+    HF links uucp is used over here. The protocol and its parameters are
+    taken from the sys file rather than negotiated, so both ends must be
+    configured alike.
+  * A called system given -Y still accepts callers that do not use it,
+    falling back to the normal handshake as soon as it sees their chat
+    script, so the two can be mixed on one network.
+
+ -- Rafael Diniz <rafael@riseup.net>  Mon, 07 Sep 2026 21:00:00 +0000
+
 uucp (1.07-35) unstable; urgency=medium
 
   * This is really 1.07-31 Debian upstream

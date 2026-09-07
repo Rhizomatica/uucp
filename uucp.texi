@@ -1843,6 +1843,29 @@ for the password, not the login name.
 If a call fails after the remote system is reached, try the next
 alternate rather than simply exiting.
 
+@item -Y
+@itemx --pre-agreed
+Use the pre-agreed session startup.  Instead of the
+@samp{Shere}/@samp{S}/@samp{ROK}/@samp{P}/@samp{U} exchange, the calling
+system sends a single @samp{Y} command naming the protocol it will use,
+its own system name and the features it supports, and the called system
+answers with the same command minus the name.  This turns six line
+turnarounds into two, which matters on a half duplex radio link where
+each one costs a transmit/receive cycle.
+
+The protocol and its parameters are not negotiated in this mode; they
+are taken from the @code{protocol} and @code{protocol-parameter}
+commands in the @file{sys} file, which must therefore agree at both
+ends.  Sequence numbers cannot be used, and @command{uucico} will refuse
+to start if they are configured.  No UUCP-layer authentication is
+performed, so use this only where the link itself is the trust anchor.
+
+A called system given @option{-Y} still accepts callers that do not use
+it, falling back to the normal handshake as soon as it sees their chat
+script, so the two may be mixed on one network.  A calling system given
+@option{-Y} cannot talk to a called system that lacks support for it, so
+enable it on the called systems first.
+
 @item -i type
 @itemx --stdin type
 Set the type of port to use when using standard input.  The only

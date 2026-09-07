@@ -134,6 +134,26 @@ struct spass
 /* min. grade set on commandline */
 static char cmdlgrade = '\0';
 
+/* TRUE if the pre-agreed session startup (-Y) was requested.  In this
+   mode we skip the Shere/S/ROK/P/U handshake and go straight to the
+   protocol, using the protocol and parameters already configured
+   identically at both ends.  See fpre_agreed_start.  */
+static boolean fPreAgreed = FALSE;
+
+/* The features we claim in pre-agreed mode.  Both ends run the same
+   configuration, so rather than negotiating them we simply assert the
+   set that this implementation supports.  */
+#define PRE_AGREED_FEATURES \
+  (FEATURE_SIZES | FEATURE_EXEC | FEATURE_RESTART \
+   | FEATURE_QUOTES | FEATURE_V103)
+
+/* How long the called system waits for the caller to announce a
+   pre-agreed session before giving up and running the normal
+   handshake.  This only has to cover the time between the caller's
+   chat script and its Y command, both of which it sends back to back,
+   so it can be short.  */
+#define CPREAGREEDTIMEOUT (10)
+
 /* Local functions.  */
 
 static void uusage P((void));
@@ -172,7 +192,15 @@ static void uapply_proto_params P((pointer puuconf, int bproto,
 static boolean fsend_uucp_cmd P((struct sconnection *qconn,
 				 const char *z));
 static char *zget_uucp_cmd P((struct sconnection *qconn,
-			      boolean frequired, boolean fstrip));
+			      boolean frequired, boolean fstrip,
+			      int ctimeout, boolean *pfnotcmd));
+static boolean fpre_agreed_start P((struct sdaemon *qdaemon,
+				    const struct uuconf_system *qsys,
+				    int bproto, int ipeer));
+static boolean fpre_agreed_send P((struct sdaemon *qdaemon,
+				   const char *zname));
+static boolean fpre_agreed_parse P((const char *zcmd, int *pbproto,
+				    int *pifeatures));
 static char *zget_typed_line P((struct sconnection *qconn,
 				boolean fstrip));
 
@@ -196,6 +224,7 @@ static const struct option asLongopts[] =
   { "login", required_argument, NULL, 'u' },
   { "wait", no_argument, NULL, 'w' },
   { "try-next", no_argument, NULL, 'z' },
+  { "pre-agreed", no_argument, NULL, 'Y' },
   { "config", required_argument, NULL, 'I' },
   { "debug", required_argument, NULL, 'x' },
   { "version", no_argument, NULL, 'v' },
@@ -261,9 +290,9 @@ main (argc, argv)
     ++zProgram;
 
 #if COHERENT_C_OPTION
-  zopts = "c:CDefg:i:I:lp:qr:s:S:u:x:X:vwzm";
+  zopts = "c:CDefg:i:I:lp:qr:s:S:u:x:X:vwzmY";
 #else
-  zopts = "cCDefg:i:I:lp:qr:s:S:u:x:X:vwzm";
+  zopts = "cCDefg:i:I:lp:qr:s:S:u:x:X:vwzmY";
 #endif
 
   while ((iopt = getopt_long (argc, argv, zopts,
@@ -339,6 +368,11 @@ main (argc, argv)
 
         case 'm':
 	  connect_shm = TRUE;
+	  break;
+
+	case 'Y':
+	  /* Use the pre-agreed session startup.  */
+	  fPreAgreed = TRUE;
 	  break;
 
 	case 'p':
@@ -859,6 +893,7 @@ uhelp ()
   printf (" -u,--login: Set login name (privileged users only)\n");
   printf (" -i,--stdin type: Type of standard input (only TLI supported)\n");
   printf (" -z,--try-next: If a call fails, try the next alternate\n");
+  printf (" -Y,--pre-agreed: Skip the startup handshake (both ends must agree)\n");
   printf (" -x,-X,--debug debug: Set debugging level\n");
 #if HAVE_TAYLOR_CONFIG
   printf (" -I,--config file: Set configuration file to use\n");
@@ -1330,20 +1365,109 @@ fdo_call (qdaemon, qstat, qdialer, pfcalled, pterr)
     zport = "unknown";
   else
     zport = qconn->qport->uuconf_zname;
-  if (! fchat (qconn, puuconf, &qsys->uuconf_schat, qsys,
-	       (const struct uuconf_dialer *) NULL,
-	       (const char *) NULL, FALSE, zport,
-	       iconn_baud (qconn)))
-    return FALSE;
+
+  /* The login chat exists to drive a login prompt, which a pre-agreed
+     session by definition does not use.  Skipping it means our Y
+     command is the very first thing we send, so the called system can
+     tell us apart from a caller using the normal handshake by looking
+     at nothing more than the first byte.  */
+  if (! fPreAgreed)
+    {
+      if (! fchat (qconn, puuconf, &qsys->uuconf_schat, qsys,
+		   (const struct uuconf_dialer *) NULL,
+		   (const char *) NULL, FALSE, zport,
+		   iconn_baud (qconn)))
+	return FALSE;
+    }
 
   *pfcalled = TRUE;
   istart_time = ixsysdep_time ((long *) NULL);
 
   *pterr = STATUS_HANDSHAKE_FAILED;
 
+  /* In pre-agreed mode we skip the whole Shere/S/ROK/P/U exchange and
+     announce the session with a single command, saving four turn
+     arounds on a half duplex radio link.  We still have to do the
+     things that block did besides the handshake itself: record that we
+     are talking, and settle on the name we call ourselves by.  */
+  if (fPreAgreed)
+    {
+      qstat->ttype = STATUS_TALKING;
+      qstat->ilast = ixsysdep_time ((long *) NULL);
+      qstat->cretries = 0;
+      qstat->cwait = 0;
+      if (! fsysdep_set_status (qsys, qstat))
+	return FALSE;
+
+      if (qsys->uuconf_zlocalname != NULL)
+	qdaemon->zlocalname = qsys->uuconf_zlocalname;
+      else
+	{
+	  iuuconf = uuconf_localname (puuconf, &qdaemon->zlocalname);
+	  if (iuuconf == UUCONF_NOT_FOUND)
+	    {
+	      qdaemon->zlocalname = zsysdep_localname ();
+	      if (qdaemon->zlocalname == NULL)
+		return FALSE;
+	    }
+	  else if (iuuconf != UUCONF_SUCCESS)
+	    {
+	      ulog_uuconf (LOG_ERROR, puuconf, iuuconf);
+	      return FALSE;
+	    }
+	}
+
+      if (! fpre_agreed_start (qdaemon, qsys, '\0', -1))
+	return FALSE;
+
+      if (! fpre_agreed_send (qdaemon, qdaemon->zlocalname))
+	return FALSE;
+
+      /* The called system confirms with the protocol it is going to
+	 use and the features it supports.  It sends this immediately
+	 before its own protocol startup packet, so waiting for it here
+	 costs us no extra turn around.  */
+      {
+	int bproto, ipeer;
+
+	zstr = zget_uucp_cmd (qconn, TRUE, fstrip, 0, (boolean *) NULL);
+	if (zstr == NULL)
+	  return FALSE;
+
+	if (! fpre_agreed_parse (zstr, &bproto, &ipeer))
+	  {
+	    ulog (LOG_ERROR, "Pre-agreed startup refused (%s)", zstr);
+	    ubuffree (zstr);
+	    return FALSE;
+	  }
+
+	if (bproto != qdaemon->qproto->bname)
+	  {
+	    ulog (LOG_ERROR,
+		  "Pre-agreed protocol mismatch (wanted '%c' got '%c')",
+		  qdaemon->qproto->bname, bproto);
+	    ubuffree (zstr);
+	    return FALSE;
+	  }
+
+	qdaemon->ifeatures &= ipeer;
+	ubuffree (zstr);
+      }
+
+      ulog (LOG_NORMAL, "Login successful (pre-agreed)");
+
+      DEBUG_MESSAGE0(DEBUG_FRIENDLY, "Login Successful");
+      if (shm_connected){
+	      sprintf(connector->message, "Login Successful.");
+	      connector->message_available = true;
+      }
+
+      goto pre_agreed;
+    }
+
   /* We should now see "Shere" from the other system.  Newer systems
      send "Shere=foo" where foo is the remote name.  */
-  zstr = zget_uucp_cmd (qconn, TRUE, fstrip);
+  zstr = zget_uucp_cmd (qconn, TRUE, fstrip, 0, (boolean *) NULL);
   if (zstr == NULL)
     return FALSE;
 
@@ -1510,7 +1634,7 @@ fdo_call (qdaemon, qstat, qdialer, pfcalled, pterr)
   /* Now we should see ROK or Rreason where reason gives a cryptic
      reason for failure.  If we are talking to a counterpart, we will
      get back ROKN, possibly with a feature bitfield attached.  */
-  zstr = zget_uucp_cmd (qconn, TRUE, fstrip);
+  zstr = zget_uucp_cmd (qconn, TRUE, fstrip, 0, (boolean *) NULL);
   if (zstr == NULL)
     return FALSE;
 
@@ -1591,7 +1715,7 @@ fdo_call (qdaemon, qstat, qdialer, pfcalled, pterr)
 
   /* The slave should now send \020Pprotos\0 where protos is a list of
      supported protocols.  Each protocol is a single character.  */
-  zstr = zget_uucp_cmd (qconn, TRUE, fstrip);
+  zstr = zget_uucp_cmd (qconn, TRUE, fstrip, 0, (boolean *) NULL);
   if (zstr == NULL)
     return FALSE;
 
@@ -1698,6 +1822,8 @@ fdo_call (qdaemon, qstat, qdialer, pfcalled, pterr)
       return FALSE;
   }
 
+ pre_agreed:
+
   /* Run any protocol parameter commands.  */
   if (qdaemon->qproto->qcmds != NULL)
     {
@@ -1760,7 +1886,7 @@ fdo_call (qdaemon, qstat, qdialer, pfcalled, pterr)
 	   before the hangup string.  */
 	for (i = 0; i < 25; i++)
 	  {
-	    zstr = zget_uucp_cmd (qconn, FALSE, fstrip);
+	    zstr = zget_uucp_cmd (qconn, FALSE, fstrip, 0, (boolean *) NULL);
 	    if (zstr == NULL)
 	      break;
 	    fdone = strstr (zstr, "OOOOOO") != NULL;
@@ -2011,6 +2137,11 @@ faccept_call (puuconf, zconfig, fuuxqt, zlogin, qconn, pzsystem)
   size_t i;
   char *zlog;
   char *zgrade;
+  boolean fpreagreed;
+  int bpreproto;
+
+  fpreagreed = FALSE;
+  bpreproto = '\0';
 
   if (pzsystem != NULL)
     *pzsystem = NULL;
@@ -2159,33 +2290,99 @@ faccept_call (puuconf, zconfig, fuuxqt, zlogin, qconn, pzsystem)
       return FALSE;
     }
 
-  /* Tell the remote system who we are.   */
-  zsend = zbufalc (strlen (sDaemon.zlocalname) + sizeof "Shere=");
-  sprintf (zsend, "Shere=%s", sDaemon.zlocalname);
-  fret = fsend_uucp_cmd (qconn, zsend);
-  ubuffree (zsend);
-  if (! fret)
+  /* If we may use the pre-agreed startup, wait for the caller to
+     announce itself before falling back to the normal handshake.  A
+     caller using this mode sends its Y command as the very first
+     thing; one using the normal handshake sends its chat script, so
+     the probe tells us which we are talking to as soon as either
+     arrives.  We only wait out the timeout for a caller that says
+     nothing at all.  */
+  zstr = NULL;
+  if (fPreAgreed)
     {
-      uaccept_call_cleanup (puuconf, (struct uuconf_system *) NULL,
-			    qport, &sport, zloc);
-      return FALSE;
+      boolean fnotcmd;
+
+      fnotcmd = FALSE;
+      zstr = zget_uucp_cmd (qconn, FALSE, fstrip, CPREAGREEDTIMEOUT,
+			    &fnotcmd);
+      if (zstr != NULL && zstr[0] != 'Y')
+	{
+	  ubuffree (zstr);
+	  zstr = NULL;
+	}
+      if (zstr == NULL)
+	ulog (LOG_NORMAL,
+	      "No pre-agreed startup from caller (%s), using normal handshake",
+	      fnotcmd ? "caller sent a chat script" : "no response");
     }
 
-  zstr = zget_uucp_cmd (qconn, TRUE, fstrip);
   if (zstr == NULL)
     {
-      uaccept_call_cleanup (puuconf, (struct uuconf_system *) NULL,
-			    qport, &sport, zloc);
-      return FALSE;
-    }
+      /* Tell the remote system who we are.   */
+      zsend = zbufalc (strlen (sDaemon.zlocalname) + sizeof "Shere=");
+      sprintf (zsend, "Shere=%s", sDaemon.zlocalname);
+      fret = fsend_uucp_cmd (qconn, zsend);
+      ubuffree (zsend);
+      if (! fret)
+	{
+	  uaccept_call_cleanup (puuconf, (struct uuconf_system *) NULL,
+				qport, &sport, zloc);
+	  return FALSE;
+	}
 
-  if (zstr[0] != 'S')
+      zstr = zget_uucp_cmd (qconn, TRUE, fstrip, 0, (boolean *) NULL);
+      if (zstr == NULL)
+	{
+	  uaccept_call_cleanup (puuconf, (struct uuconf_system *) NULL,
+				qport, &sport, zloc);
+	  return FALSE;
+	}
+
+      if (zstr[0] != 'S')
+	{
+	  ulog (LOG_ERROR, "Bad introduction string");
+	  ubuffree (zstr);
+	  uaccept_call_cleanup (puuconf, (struct uuconf_system *) NULL,
+				qport, &sport, zloc);
+	  return FALSE;
+	}
+    }
+  else
     {
-      ulog (LOG_ERROR, "Bad introduction string");
+      char *znew;
+      int idummy;
+
+      /* Rewrite "Yc name -N0nnn" into the "Sname -N0nnn" the rest of
+	 this function already knows how to handle, so that the system
+	 lookup, the permission checks and the feature parsing below all
+	 work exactly as they do for a normal call.  */
+      if (! fpre_agreed_parse (zstr, &bpreproto, &idummy))
+	{
+	  ulog (LOG_ERROR, "Bad pre-agreed startup string (%s)", zstr);
+	  ubuffree (zstr);
+	  uaccept_call_cleanup (puuconf, (struct uuconf_system *) NULL,
+				qport, &sport, zloc);
+	  return FALSE;
+	}
+
+      zspace = strchr (zstr + 2, ' ');
+      if (zspace == NULL)
+	{
+	  ulog (LOG_ERROR, "No system name in pre-agreed startup string");
+	  ubuffree (zstr);
+	  uaccept_call_cleanup (puuconf, (struct uuconf_system *) NULL,
+				qport, &sport, zloc);
+	  return FALSE;
+	}
+
+      znew = zbufalc (strlen (zspace + 1) + 2);
+      sprintf (znew, "S%s", zspace + 1);
       ubuffree (zstr);
-      uaccept_call_cleanup (puuconf, (struct uuconf_system *) NULL,
-			    qport, &sport, zloc);
-      return FALSE;
+      zstr = znew;
+
+      fpreagreed = TRUE;
+      ulog (LOG_NORMAL, "Pre-agreed startup from caller (protocol '%c')",
+	    bpreproto);
     }
 
   zspace = strchr (zstr, ' ');
@@ -2494,6 +2691,26 @@ faccept_call (puuconf, zconfig, fuuxqt, zlogin, qconn, pzsystem)
 
   ubuffree (zstr);
 
+  /* In pre-agreed mode we confirm with a single command carrying the
+     protocol and the features we share with the caller, and go
+     straight to the protocol; there is no ROK, no protocol list and no
+     U reply.  sDaemon.ifeatures currently holds what the caller
+     claimed, parsed from its -N above.  */
+  if (fpreagreed)
+    {
+      if (! fpre_agreed_start (&sDaemon, qsys, bpreproto, sDaemon.ifeatures)
+	  || ! fpre_agreed_send (&sDaemon, (const char *) NULL))
+	{
+	  (void) fsend_uucp_cmd (qconn, "YN");
+	  sstat.ttype = STATUS_FAILED;
+	  (void) fsysdep_set_status (qsys, &sstat);
+	  uaccept_call_cleanup (puuconf, &ssys, qport, &sport, zloc);
+	  return FALSE;
+	}
+
+      goto pre_agreed;
+    }
+
   if (qsys->uuconf_fsequence && ! fgotseq)
     {
       (void) fsend_uucp_cmd (qconn, "RBADSEQ");
@@ -2621,7 +2838,7 @@ faccept_call (puuconf, zconfig, fuuxqt, zlogin, qconn, pzsystem)
     }
     
   /* The master will now send back the selected protocol.  */
-  zstr = zget_uucp_cmd (qconn, TRUE, fstrip);
+  zstr = zget_uucp_cmd (qconn, TRUE, fstrip, 0, (boolean *) NULL);
   if (zstr == NULL)
     {
       sstat.ttype = STATUS_FAILED;
@@ -2674,6 +2891,8 @@ faccept_call (puuconf, zconfig, fuuxqt, zlogin, qconn, pzsystem)
     sDaemon.cchans = 1;
   else
     sDaemon.cchans = asProtocols[i].cchans;
+
+ pre_agreed:
 
   /* Run the chat script for when a call is received.  */
   if (! fchat (qconn, puuconf, &qsys->uuconf_scalled_chat, qsys,
@@ -2779,7 +2998,7 @@ faccept_call (puuconf, zconfig, fuuxqt, zlogin, qconn, pzsystem)
 	   string.  */
 	for (i = 0; i < 25; i++)
 	  {
-	    zstr = zget_uucp_cmd (qconn, FALSE, fstrip);
+	    zstr = zget_uucp_cmd (qconn, FALSE, fstrip, 0, (boolean *) NULL);
 	    if (zstr == NULL)
 	      break;
 	    fdone = strstr (zstr, "OOOOOO") != NULL;
@@ -2895,6 +3114,163 @@ uapply_proto_params (puuconf, bproto, qcmds, pas)
     }
 }
 
+/* Set up the daemon structure for a pre-agreed session, in which we
+   skip the Shere/S/ROK/P/U handshake entirely.  Rather than
+   negotiating, both ends assert the protocol and the features that
+   their (identical) configurations already specify.
+
+   bproto is the protocol the other side proposed, or '\0' if we are
+   the caller and so get to choose.  When choosing we use the
+   "protocol" command for the system, falling back to the one for the
+   port, and finally to 'y', which is the only protocol that makes
+   sense on the half duplex links this mode exists for.
+
+   ipeer holds the features the other side claims, or -1 if we have
+   not heard from it yet; we never claim a feature that both sides do
+   not support.
+
+   We deliberately leave UUCONF_RELIABLE_FULLDUPLEX out of ireliable,
+   which makes the common code set cchans to 1 so that we never start
+   a send and a receive at the same time.  */
+
+static boolean
+fpre_agreed_start (qdaemon, qsys, bproto, ipeer)
+     struct sdaemon *qdaemon;
+     const struct uuconf_system *qsys;
+     int bproto;
+     int ipeer;
+{
+  const char *zproto;
+  size_t i;
+
+  /* There is no -Q exchange in this mode, so sequence numbers would
+     silently drift out of step.  Refuse rather than corrupt them.  */
+  if (qsys->uuconf_fsequence)
+    {
+      ulog (LOG_ERROR,
+	    "Pre-agreed startup cannot be used with sequence numbers");
+      return FALSE;
+    }
+
+  if (bproto != '\0')
+    {
+      for (i = 0; i < CPROTOCOLS; i++)
+	if (asProtocols[i].bname == bproto)
+	  break;
+    }
+  else
+    {
+      zproto = qsys->uuconf_zprotocols;
+      if (zproto == NULL
+	  && qdaemon->qconn->qport != NULL)
+	zproto = qdaemon->qconn->qport->uuconf_zprotocols;
+      if (zproto == NULL || *zproto == '\0')
+	zproto = "y";
+
+      for (i = 0; i < CPROTOCOLS; i++)
+	if (asProtocols[i].bname == *zproto)
+	  break;
+
+      bproto = *zproto;
+    }
+
+  if (i >= CPROTOCOLS)
+    {
+      ulog (LOG_ERROR, "Unsupported protocol '%c' for pre-agreed startup",
+	    bproto);
+      return FALSE;
+    }
+
+  qdaemon->qproto = &asProtocols[i];
+
+  qdaemon->ifeatures = PRE_AGREED_FEATURES;
+  if (ipeer >= 0)
+    qdaemon->ifeatures &= ipeer;
+
+  qdaemon->ireliable = (UUCONF_RELIABLE_SPECIFIED
+			| UUCONF_RELIABLE_ENDTOEND
+			| UUCONF_RELIABLE_RELIABLE
+			| UUCONF_RELIABLE_EIGHT);
+  qdaemon->cchans = 1;
+
+  return TRUE;
+}
+
+/* Send the pre-agreed startup command.  The caller sends its own
+   system name so that the called system can look us up exactly as it
+   would have from the S command; this keeps per system permissions,
+   spool directories and aliases working, and means the called system
+   needs no out of band knowledge of who is calling.  The called
+   system replies with the same command minus the name.  */
+
+static boolean
+fpre_agreed_send (qdaemon, zname)
+     struct sdaemon *qdaemon;
+     const char *zname;
+{
+  char *zsend;
+  boolean fret;
+
+  /* "Yc " + name + " -N0" + up to 11 octal digits + NUL.  Sized for any
+     int so that adding features later cannot overflow this.  */
+  zsend = zbufalc ((zname == NULL ? 0 : strlen (zname)) + sizeof "Yc  -N0" + 16);
+  if (zname == NULL)
+    sprintf (zsend, "Y%c -N0%o", qdaemon->qproto->bname,
+	     (unsigned int) qdaemon->ifeatures);
+  else
+    sprintf (zsend, "Y%c %s -N0%o", qdaemon->qproto->bname, zname,
+	     (unsigned int) qdaemon->ifeatures);
+
+  fret = fsend_uucp_cmd (qdaemon->qconn, zsend);
+  ubuffree (zsend);
+  return fret;
+}
+
+/* Pick apart a pre-agreed startup command, which looks like
+   "Yc [name] -N0nnn".  We only take the protocol letter and the
+   feature bitfield here; the name, if any, is left for the caller to
+   deal with.  Returns FALSE if this is not a command we understand,
+   which includes the "YN" refusal.  */
+
+static boolean
+fpre_agreed_parse (zcmd, pbproto, pifeatures)
+     const char *zcmd;
+     int *pbproto;
+     int *pifeatures;
+{
+  const char *z;
+
+  if (zcmd[0] != 'Y' || zcmd[1] == '\0' || zcmd[1] == 'N')
+    return FALSE;
+
+  *pbproto = zcmd[1];
+  *pifeatures = 0;
+
+  /* Walk the whitespace separated arguments rather than searching the
+     whole string, so that a system name which happens to contain "-N"
+     is not mistaken for the feature bitfield.  */
+  for (z = zcmd + 2; *z != '\0'; z++)
+    {
+      if (! isspace (BUCHAR (*z)))
+	continue;
+      while (isspace (BUCHAR (*z)))
+	z++;
+      if (z[0] == '-' && z[1] == 'N')
+	{
+	  *pifeatures = (int) strtol (z + 2, (char **) NULL, 0);
+	  break;
+	}
+      /* Skip to the end of this argument; the loop increment then moves
+	 us past the whitespace that follows it.  */
+      while (*z != '\0' && ! isspace (BUCHAR (*z)))
+	z++;
+      if (*z == '\0')
+	break;
+    }
+
+  return TRUE;
+}
+
 /* Send a string to the other system beginning with a DLE
    character and terminated with a null byte.  This is only
    used when no protocol is in force.  */
@@ -2926,17 +3302,27 @@ fsend_uucp_cmd (qconn, z)
    implementation has the potential of being seriously slow.  It also
    doesn't have any real error recovery.  The frequired argument is
    passed as TRUE if we need the string; we don't care that much if
-   we're closing down the connection anyhow.  */
+   we're closing down the connection anyhow.  If ctimeout is greater
+   than zero it overrides the timeout implied by frequired.
+
+   If pfnotcmd is not NULL we are probing rather than reading: as soon
+   as we see a byte that is not the DLE introducing a command we set
+   *pfnotcmd and give up, instead of discarding it and reading on.
+   The pre-agreed startup probe uses this to recognise a caller that
+   is running the normal handshake the instant its chat script
+   arrives, rather than waiting out the timeout.  */
 
 #define CTIMEOUT (120)
 #define CSHORTTIMEOUT (10)
 #define CINCREMENT (100)
 
 static char *
-zget_uucp_cmd (qconn, frequired, fstrip)
+zget_uucp_cmd (qconn, frequired, fstrip, coverride, pfnotcmd)
      struct sconnection *qconn;
      boolean frequired;
      boolean fstrip;
+     int coverride;
+     boolean *pfnotcmd;
 {
   char *zalc;
   size_t calc;
@@ -2950,7 +3336,9 @@ zget_uucp_cmd (qconn, frequired, fstrip)
 #endif
 
   iendtime = ixsysdep_time ((long *) NULL);
-  if (frequired)
+  if (coverride > 0)
+    iendtime += coverride;
+  else if (frequired)
     iendtime += CTIMEOUT;
   else
     iendtime += CSHORTTIMEOUT;
@@ -3017,6 +3405,22 @@ zget_uucp_cmd (qconn, frequired, fstrip)
 	{
 	  if (b == '\020')
 	    fintro = TRUE;
+	  else if (pfnotcmd != NULL)
+	    {
+	      /* Probing: this is not the start of a command, so say so
+		 at once rather than waiting for one that is not
+		 coming.  */
+#if DEBUG > 1
+	      if (FDEBUGGING (DEBUG_HANDSHAKE))
+		{
+		  ulog (LOG_DEBUG_END, "\" (not a command)");
+		  iDebug = iolddebug;
+		}
+#endif
+	      *pfnotcmd = TRUE;
+	      ubuffree (zalc);
+	      return NULL;
+	    }
 	  continue;
 	}
 
