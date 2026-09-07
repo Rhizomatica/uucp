@@ -7,8 +7,9 @@ Copyright: 1991, 1992, 1993, 1994, 1995, 2002 Ian Lance Taylor <ian@airs.com>
 License: GPL-2
 
 Files: debian/*
-Copyright: 2013-2024 Thorsten Alteholz <debian@alteholz.de>,
-           Richard A Nelson (Rick) 
+Copyright: 2013-2026 Thorsten Alteholz <debian@alteholz.de>,
+           2025-2026 Rafael Diniz <rafael@riseup.net>,
+           Richard A Nelson (Rick)
            Christian Perrier
            Peter Palfrader
            (see changelog)  
