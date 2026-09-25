@@ -1,3 +1,13 @@
+uucp (1.07-37) stable; urgency=medium
+
+  * Pre-agreed startup: a called system now takes a caller's Y command
+    even when it arrives after the 10 second probe, and a caller skips
+    the Shere the called system sends when its probe gives up.  Until
+    now a Y command delayed past the probe, as one lost frame on an HF
+    link does, failed the whole call.
+
+ -- Rafael Diniz <rafael@riseup.net>  Fri, 25 Sep 2026 09:00:00 +0000
+
 uucp (1.07-36) stable; urgency=medium
 
   * Add pre-agreed session startup ("-Y", "--pre-agreed"), which replaces

@@ -1434,6 +1434,26 @@ fdo_call (qdaemon, qstat, qdialer, pfcalled, pterr)
 	if (zstr == NULL)
 	  return FALSE;
 
+	/* If our Y command took longer to cross the link than the
+	   called system waits for it, the called system has fallen
+	   back to the normal handshake and sent Shere.  It still takes
+	   the Y command when it arrives, so skip the Shere and wait
+	   for its answer.  A called system without -Y support sends
+	   Shere too, and then hangs up on our Y command.  */
+	if (strncmp (zstr, "Shere", sizeof "Shere" - 1) == 0)
+	  {
+	    DEBUG_MESSAGE1 (DEBUG_HANDSHAKE,
+			    "fdo_call: Skipping %s while waiting for Y", zstr);
+	    ubuffree (zstr);
+	    zstr = zget_uucp_cmd (qconn, TRUE, fstrip, 0, (boolean *) NULL);
+	    if (zstr == NULL)
+	      {
+		ulog (LOG_ERROR,
+		      "No pre-agreed answer after Shere (does the called system use -Y?)");
+		return FALSE;
+	      }
+	  }
+
 	if (! fpre_agreed_parse (zstr, &bproto, &ipeer))
 	  {
 	    ulog (LOG_ERROR, "Pre-agreed startup refused (%s)", zstr);
@@ -2338,7 +2358,12 @@ faccept_call (puuconf, zconfig, fuuxqt, zlogin, qconn, pzsystem)
 	  return FALSE;
 	}
 
-      if (zstr[0] != 'S')
+      /* A pre-agreed caller whose Y command took longer to arrive
+	 than the probe waited has skipped our Shere; take its Y
+	 command now as if the probe had seen it.  */
+      if (fPreAgreed && zstr[0] == 'Y')
+	ulog (LOG_NORMAL, "Late pre-agreed startup from caller");
+      else if (zstr[0] != 'S')
 	{
 	  ulog (LOG_ERROR, "Bad introduction string");
 	  ubuffree (zstr);
@@ -2347,7 +2372,8 @@ faccept_call (puuconf, zconfig, fuuxqt, zlogin, qconn, pzsystem)
 	  return FALSE;
 	}
     }
-  else
+
+  if (zstr[0] == 'Y')
     {
       char *znew;
       int idummy;
