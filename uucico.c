@@ -3430,7 +3430,21 @@ zget_uucp_cmd (qconn, frequired, fstrip, coverride, pfnotcmd)
       if (! fintro)
 	{
 	  if (b == '\020')
-	    fintro = TRUE;
+	    {
+	      long imin;
+
+	      fintro = TRUE;
+	      /* A command that has begun to arrive is read to its end.
+		 Giving up between its DLE and its NUL drops the part
+		 already read, and what follows is no longer a command:
+		 the pre-agreed probe did that to a Y command arriving in
+		 its last second, and the normal handshake after it then
+		 waited out its whole timeout for a command that had
+		 come.  */
+	      imin = ixsysdep_time ((long *) NULL) + CSHORTTIMEOUT;
+	      if (iendtime < imin)
+		iendtime = imin;
+	    }
 	  else if (pfnotcmd != NULL)
 	    {
 	      /* Probing: this is not the start of a command, so say so
