@@ -1,3 +1,13 @@
+uucp (1.07-39) stable; urgency=medium
+
+  * Wait 180 seconds, not 120, for a required command such as the called
+    system's Shere.  Over an HF modem the line is up at once and the Shere
+    arrives only once the modem has connected; Mercury's deep connect on
+    a weak link can take longer than 120 seconds, and the call was given
+    up with the connect still in progress.  uuport waits as long.
+
+ -- Rafael Diniz <rafael@riseup.net>  Wed, 30 Sep 2026 09:00:00 +0000
+
 uucp (1.07-38) stable; urgency=medium
 
   * Pre-agreed startup: a caller's Y command arriving in the last second
