@@ -3338,7 +3338,12 @@ fsend_uucp_cmd (qconn, z)
    is running the normal handshake the instant its chat script
    arrives, rather than waiting out the timeout.  */
 
-#define CTIMEOUT (120)
+/* How long a required command may take to arrive -- in practice, the
+   far end's Shere after the call.  Over an HF modem the line is up at
+   once and the Shere comes only when the modem has connected: Mercury's
+   deep connect, MFSK CALLs on a weak link, can take 100 s and more.
+   uuport, which carries the line, waits as long. */
+#define CTIMEOUT (180)
 #define CSHORTTIMEOUT (10)
 #define CINCREMENT (100)
 
